@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ConsoleDraw.DoubleBuffer
 {
     public class TextRenderBuffer
     {
-        //TODO: find different values for max width/height
-        private const int MaxWidth = 800;
-        private const int MaxHeight = 800;
-        private readonly string[] TextBuffer = new string[MaxWidth * MaxHeight];
+        private readonly int MaxWidth = Console.LargestWindowWidth;
+        private readonly int MaxHeight = Console.LargestWindowHeight;
+        private readonly char[] TextBuffer;
         private int Width = 0;
         private int Height = 0;
         private int CombinedColorCode;
@@ -18,25 +18,25 @@ namespace ConsoleDraw.DoubleBuffer
         public int GetWidth() => Width;
         public int GetHeight() => Height;
 
-        public void FillBuffer(string fillCharacter = "")
+        public TextRenderBuffer()
+        {
+            TextBuffer = new char[MaxWidth * MaxHeight];
+        }
+
+        public void FillBuffer(char fillCharacter = ' ')
         {
             DrawDictionary = new SortedDictionary<int, SortedList<int, int>>();
             DrawDictionaryReverseLookup = new SortedDictionary<int, int>();
-            if (fillCharacter.Length > 1)
-            {
-                fillCharacter = fillCharacter.Substring(0, 1);
-            }
             for (var i = 0; i < TextBuffer.Length; i++)
             {
                 TextBuffer[i] = fillCharacter;
             }
         }
 
-        public void SetSize(int width, int height)
+        public void ResetSize()
         {
-            //TODO: keep these lines?
-            //var width = Console.WindowWidth;
-            //var height = Console.WindowHeight;
+            var width = Console.WindowWidth;
+            var height = Console.WindowHeight;
             var oldWidth = Width;
             var oldHeight = Height;
             Width = Math.Min(width, MaxWidth);
@@ -55,7 +55,7 @@ namespace ConsoleDraw.DoubleBuffer
             var start = (y * Width) + x;
             for (var i = 0; i < text.Length; i++)
             {
-                TextBuffer[start + i] = text.Substring(i, 1);
+                TextBuffer[start + i] = text[i];
                 LogColorPosition(start + i);
             }
         }
