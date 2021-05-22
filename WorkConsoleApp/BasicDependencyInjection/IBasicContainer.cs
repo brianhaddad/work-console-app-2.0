@@ -7,7 +7,6 @@ namespace BasicDependencyInjection
         void Register<TInterface, TImplementation>() where TImplementation : TInterface;
         void Register<T>();
         void Register(Type type);
-        T Create<T>() where T : class;
         T Get<T>() where T : class;
         void Verify();
     }

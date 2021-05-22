@@ -9,6 +9,7 @@ namespace BasicDependencyInjection.Container
     {
         private readonly Dictionary<Type, Type> ConcreteTypeLookup = new Dictionary<Type, Type>();
         private readonly Dictionary<Type, object> TypeObjects = new Dictionary<Type, object>();
+        private bool Verified = false;
 
         public void Register<TInterface, TImplementation>() where TImplementation : TInterface
             => Register(typeof(TInterface), typeof(TImplementation));
@@ -23,13 +24,12 @@ namespace BasicDependencyInjection.Container
             }
             ConcreteTypeLookup.Add(interfaceType, implementationType);
         }
-        public T Create<T>() where T : class => Create(typeof(T)) as T;
 
         private object Create(Type type)
         {
             if (!ConcreteTypeLookup.ContainsKey(type))
             {
-                throw new NoMatchingRegistration($"{type.FullName} not registered.");
+                throw new NoMatchingRegistrationException($"{type.FullName} not registered.");
             }
             //TODO: Does this work with generics?!?
             var concreteType = ConcreteTypeLookup[type];
@@ -41,17 +41,22 @@ namespace BasicDependencyInjection.Container
             //Can we detect these and look in a separate collection where factories or generators have been registered?
             //HOW TO HANDLE?!? :)
             var parameters = constructorParameters.Select(param => Create(param.ParameterType)).ToArray();
-            return firstConstructor.Invoke(parameters);
+            var obj = firstConstructor.Invoke(parameters);
+            return obj;
         }
 
         public T Get<T>() where T : class
         {
+            if (!Verified)
+            {
+                throw new UnverifiedContainerException("You must verify the container in order to use it.");
+            }
             var t = typeof(T);
             if (!TypeObjects.ContainsKey(t))
             {
                 TypeObjects.Add(t, Create(t));
             }
-            return (T)TypeObjects[t];
+            return TypeObjects[t] as T;
         }
 
         public void Verify()
@@ -70,6 +75,7 @@ namespace BasicDependencyInjection.Container
                 Console.WriteLine($"Something went wrong while registering {currentType}.");
                 Console.WriteLine(e);
             }
+            Verified = true;
         }
     }
 }
