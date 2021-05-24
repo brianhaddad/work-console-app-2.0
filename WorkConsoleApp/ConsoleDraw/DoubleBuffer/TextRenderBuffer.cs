@@ -33,7 +33,7 @@ namespace ConsoleDraw.DoubleBuffer
             }
         }
 
-        public void ResetSize()
+        public void WindowResizeEvent()
         {
             var width = Console.WindowWidth;
             var height = Console.WindowHeight;
