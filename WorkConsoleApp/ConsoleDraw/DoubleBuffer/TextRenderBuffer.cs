@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace ConsoleDraw.DoubleBuffer
 {
-    public class TextRenderBuffer
+    public class TextRenderBuffer : IConsoleBuffer
     {
         private readonly int MaxWidth = Console.LargestWindowWidth;
         private readonly int MaxHeight = Console.LargestWindowHeight;

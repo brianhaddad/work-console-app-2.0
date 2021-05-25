@@ -1,5 +1,6 @@
 ﻿using BasicDependencyInjection;
 using BasicDependencyInjection.Container;
+using ConsoleDraw.DoubleBuffer;
 
 namespace WorkConsoleApp
 {
@@ -10,6 +11,7 @@ namespace WorkConsoleApp
             var container = new BasicContainer();
 
             //TODO: register classes and stuff here
+            container.Register<IConsoleBuffer, TextRenderBuffer>();
 
             return container;
         }
