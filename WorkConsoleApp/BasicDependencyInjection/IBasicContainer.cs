@@ -8,6 +8,7 @@ namespace BasicDependencyInjection
         void Register<T>();
         void Register(Type type);
         T Get<T>() where T : class;
+        T Create<T>() where T : class;
         void Verify();
     }
 }

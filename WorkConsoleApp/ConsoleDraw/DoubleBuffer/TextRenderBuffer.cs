@@ -12,8 +12,8 @@ namespace ConsoleDraw.DoubleBuffer
         private int Width = 0;
         private int Height = 0;
         private int CombinedColorCode;
-        private SortedDictionary<int, SortedList<int, int>> DrawDictionary;
-        private SortedDictionary<int, int> DrawDictionaryReverseLookup;
+        private SortedDictionary<int, SortedList<int, int>> DrawDictionary = new SortedDictionary<int, SortedList<int, int>>();
+        private SortedDictionary<int, int> DrawDictionaryReverseLookup = new SortedDictionary<int, int>();
 
         public int GetWidth() => Width;
         public int GetHeight() => Height;

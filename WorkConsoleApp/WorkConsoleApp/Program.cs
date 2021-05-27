@@ -1,4 +1,7 @@
-﻿using System;
+﻿using ConsoleDraw.Components;
+using ConsoleDraw.Components.Text;
+using ConsoleDraw.DoubleBuffer;
+using System;
 
 namespace WorkConsoleApp
 {
@@ -19,6 +22,22 @@ namespace WorkConsoleApp
              * 
              * what about user input?
              * */
+
+            //TODO: need more factories to do initial setup on these guys, or maybe some kind of settings object.
+            var buffer = container.Get<IConsoleBuffer>();
+            buffer.WindowResizeEvent();
+            buffer.SetColors(ConsoleColor.Red, ConsoleColor.Black);
+            var componentFactory = container.Get<IComponentFactory>();
+            var text1 = componentFactory.MakeComponent<TextOutput>();
+            text1.SetPosition(0, 0);
+            text1.SetText("Hello");
+            var text2 = componentFactory.MakeComponent<TextOutput>();
+            text2.SetPosition(10, 10);
+            text2.SetText("World");
+            text1.Draw();
+            text2.Draw();
+            buffer.DrawBuffer();
+            Console.ReadLine();
         }
     }
 }

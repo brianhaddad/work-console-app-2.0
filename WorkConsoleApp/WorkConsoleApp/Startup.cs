@@ -1,5 +1,7 @@
 ﻿using BasicDependencyInjection;
 using BasicDependencyInjection.Container;
+using ConsoleDraw.Components;
+using ConsoleDraw.Components.Text;
 using ConsoleDraw.DoubleBuffer;
 
 namespace WorkConsoleApp
@@ -10,10 +12,19 @@ namespace WorkConsoleApp
         {
             var container = new BasicContainer();
 
-            //TODO: register classes and stuff here
+            container.Register<IComponentFactory, ComponentFactory>();
+            RegisterComponents(container);
+
             container.Register<IConsoleBuffer, TextRenderBuffer>();
 
+            container.Verify();
             return container;
+        }
+
+        private static void RegisterComponents(IBasicContainer container)
+        {
+            //TODO: use discovery to find all implementations of IComponent
+            container.Register<TextOutput>();
         }
     }
 }

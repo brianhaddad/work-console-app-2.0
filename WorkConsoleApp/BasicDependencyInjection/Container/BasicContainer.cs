@@ -10,6 +10,13 @@ namespace BasicDependencyInjection.Container
         private readonly Dictionary<Type, Type> ConcreteTypeLookup = new Dictionary<Type, Type>();
         private readonly Dictionary<Type, object> TypeObjects = new Dictionary<Type, object>();
         private bool Verified = false;
+        private bool Verifying = false;
+
+        public BasicContainer()
+        {
+            Register(typeof(IBasicContainer), GetType());
+            TypeObjects.Add(typeof(IBasicContainer), this);
+        }
 
         public void Register<TInterface, TImplementation>() where TImplementation : TInterface
             => Register(typeof(TInterface), typeof(TImplementation));
@@ -40,14 +47,18 @@ namespace BasicDependencyInjection.Container
             //TODO: Some parameters might not be classes that need to be instantiated.
             //Can we detect these and look in a separate collection where factories or generators have been registered?
             //HOW TO HANDLE?!? :)
-            var parameters = constructorParameters.Select(param => Create(param.ParameterType)).ToArray();
+            var get = GetType().GetMethod(nameof(BasicContainer.Get));
+            var parameters = constructorParameters.Select((param) => {
+                var getGeneric = get.MakeGenericMethod(param.ParameterType);
+                return getGeneric.Invoke(this, null);
+            }).ToArray();
             var obj = firstConstructor.Invoke(parameters);
             return obj;
         }
 
         public T Get<T>() where T : class
         {
-            if (!Verified)
+            if (!Verified && !Verifying)
             {
                 throw new UnverifiedContainerException("You must verify the container in order to use it.");
             }
@@ -59,15 +70,23 @@ namespace BasicDependencyInjection.Container
             return TypeObjects[t] as T;
         }
 
+
+        public T Create<T>() where T : class
+            => (T)Create(typeof(T));
+
         public void Verify()
         {
+            Verifying = true;
             var currentType = "";
             try
             {
                 foreach (var kvp in ConcreteTypeLookup)
                 {
-                    currentType = kvp.Key.FullName;
-                    var result = Create(kvp.Key);
+                    if (!TypeObjects.ContainsKey(kvp.Key))
+                    {
+                        currentType = kvp.Key.FullName;
+                        var result = Create(kvp.Key);
+                    }
                 }
             }
             catch (Exception e)
@@ -75,6 +94,7 @@ namespace BasicDependencyInjection.Container
                 Console.WriteLine($"Something went wrong while registering {currentType}.");
                 Console.WriteLine(e);
             }
+            Verifying = false;
             Verified = true;
         }
     }
