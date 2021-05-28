@@ -29,13 +29,13 @@ namespace WorkConsoleApp
             buffer.SetColors(ConsoleColor.Red, ConsoleColor.Black);
             var componentFactory = container.Get<IComponentFactory>();
             var text1 = componentFactory.MakeComponent<TextOutput>();
-            text1.SetPosition(0, 0);
+            text1.ConfigureComponentLayout(layout => layout.SetPosition(0, 0));
             text1.SetText("Hello");
             var text2 = componentFactory.MakeComponent<TextOutput>();
-            text2.SetPosition(10, 10);
+            text2.ConfigureComponentLayout(layout => layout.SetPosition(10, 10));
             text2.SetText("World");
-            text1.Draw();
-            text2.Draw();
+            text1.Draw(0, 0);
+            text2.Draw(0, 0);
             buffer.DrawBuffer();
             Console.ReadLine();
         }
