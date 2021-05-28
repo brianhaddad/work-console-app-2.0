@@ -59,5 +59,11 @@ namespace ConsoleDraw.Components
         }
 
         public void ConfigureComponentLayout(Action<ComponentLayout> action) => action(ComponentLayout);
+
+        public virtual void ReflowComponentLayout()
+        {
+            //This is the method that will iterate over all the children and reflow them.
+            //Not all components will have to reflow, so no logic for reflow exists on the abstract base class.
+        }
     }
 }
