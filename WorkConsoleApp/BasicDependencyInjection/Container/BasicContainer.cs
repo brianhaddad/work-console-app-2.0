@@ -63,6 +63,10 @@ namespace BasicDependencyInjection.Container
                 throw new UnverifiedContainerException("You must verify the container in order to use it.");
             }
             var t = typeof(T);
+            if (Verifying)
+            {
+                return Create(t) as T;
+            }
             if (!TypeObjects.ContainsKey(t))
             {
                 TypeObjects.Add(t, Create(t));
