@@ -6,8 +6,20 @@ namespace ConsoleDraw.Components.ComponentStyling
     {
         private int X = 0;
         private int Y = 0;
-        private int Width = 0;
+        private int Width = 10;
         private int Height = 0;
+        private bool Border = false;
+        private int MarginTop = 0;
+        private int MarginRight = 0;
+        private int MarginBottom = 0;
+        private int MarginLeft = 0;
+        private int PaddingTop = 0;
+        private int PaddingRight = 0;
+        private int PaddingBottom = 0;
+        private int PaddingLeft = 0;
+        private HorizontalAlignment TextAlign = HorizontalAlignment.Left;
+        private VerticalAlignment VerticalAlign = VerticalAlignment.Top;
+        private int? ComputedHeight = null;
 
         public void SetAnchorPoints(AnchorPoints[] anchorPoints)
         {
@@ -16,43 +28,31 @@ namespace ConsoleDraw.Components.ComponentStyling
 
         public void SetMargin(int top, int right, int bottom, int left)
         {
-            throw new NotImplementedException();
+            MarginTop = top;
+            MarginRight = right;
+            MarginBottom = bottom;
+            MarginLeft = left;
         }
 
-        public void SetMargin(int top, int sides, int bottom)
-        {
-            throw new NotImplementedException();
-        }
+        public void SetMargin(int top, int sides, int bottom) => SetMargin(top, sides, bottom, sides);
 
-        public void SetMargin(int vertical, int horizontal)
-        {
-            throw new NotImplementedException();
-        }
+        public void SetMargin(int vertical, int horizontal) => SetMargin(vertical, horizontal, vertical, horizontal);
 
-        public void SetMargin(int all)
-        {
-            throw new NotImplementedException();
-        }
+        public void SetMargin(int all) => SetMargin(all, all, all, all);
 
         public void SetPadding(int top, int right, int bottom, int left)
         {
-            throw new NotImplementedException();
+            PaddingTop = top;
+            PaddingRight = right;
+            PaddingBottom = bottom;
+            PaddingLeft = left;
         }
 
-        public void SetPadding(int top, int sides, int bottom)
-        {
-            throw new NotImplementedException();
-        }
+        public void SetPadding(int top, int sides, int bottom) => SetPadding(top, sides, bottom, sides);
 
-        public void SetPadding(int vertical, int horizontal)
-        {
-            throw new NotImplementedException();
-        }
+        public void SetPadding(int vertical, int horizontal) => SetPadding(vertical, horizontal, vertical, horizontal);
 
-        public void SetPadding(int all)
-        {
-            throw new NotImplementedException();
-        }
+        public void SetPadding(int all) => SetPadding(all, all, all, all);
 
         public void SetPosition(int left, int top)
         {
@@ -71,14 +71,19 @@ namespace ConsoleDraw.Components.ComponentStyling
             throw new NotImplementedException();
         }
 
+        public void SetBorder(bool border)
+        {
+            Border = border;
+        }
+
         public void SetVerticalAlignment(VerticalAlignment verticalAlignment)
         {
-            throw new NotImplementedException();
+            VerticalAlign = verticalAlignment;
         }
 
         public void SetHorizontalAlignment(HorizontalAlignment horizontalAlignment)
         {
-            throw new NotImplementedException();
+            TextAlign = horizontalAlignment;
         }
 
         public LayoutDetails GetLayout()
@@ -89,7 +94,23 @@ namespace ConsoleDraw.Components.ComponentStyling
                 Y = Y,
                 Width = Width,
                 Height = Height,
+                Border = Border,
+                MarginBottom = MarginBottom,
+                MarginLeft = MarginLeft,
+                MarginRight = MarginRight,
+                MarginTop = MarginTop,
+                PaddingBottom = PaddingBottom,
+                PaddingLeft = PaddingLeft,
+                PaddingRight = PaddingRight,
+                PaddingTop = PaddingTop,
+                TextAlign = TextAlign,
+                VerticalAlign = VerticalAlign,
             };
+        }
+
+        public void SetComputedHeight(int height)
+        {
+            ComputedHeight = height;
         }
     }
 }

@@ -4,6 +4,7 @@
     {
         void SetSize(int w, int h);
         void SetWrap(bool wrap);
+        void SetBorder(bool border);
         void SetAnchorPoints(AnchorPoints[] anchorPoints);
         void SetHorizontalAlignment(HorizontalAlignment horizontalAlignment);
         void SetVerticalAlignment(VerticalAlignment verticalAlignment);
@@ -16,6 +17,7 @@
         void SetPadding(int top, int sides, int bottom);
         void SetPadding(int vertical, int horizontal);
         void SetPadding(int all);
+        void SetComputedHeight(int height);
         LayoutDetails GetLayout();
     }
 }

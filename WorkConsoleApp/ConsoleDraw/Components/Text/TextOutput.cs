@@ -1,4 +1,5 @@
-﻿using ConsoleDraw.DoubleBuffer;
+﻿using ConsoleDraw.Components.ComponentStyling;
+using ConsoleDraw.DoubleBuffer;
 using System;
 
 namespace ConsoleDraw.Components.Text
@@ -19,7 +20,12 @@ namespace ConsoleDraw.Components.Text
 
         public override void Draw(int originX, int originY)
         {
-            ConsoleBuffer.WriteLineToBuffer(Text, Layout.X, Layout.Y);
+            var lines = Text.PutInWindow(Layout);
+            ComponentLayout.SetComputedHeight(lines.Length);
+            for (var i = 0; i < lines.Length; i++)
+            {
+                ConsoleBuffer.WriteLineToBuffer(lines[i], Layout.X, Layout.Y + i);
+            }
             base.Draw(originX, originY);
         }
     }
