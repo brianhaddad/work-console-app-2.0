@@ -1,13 +1,17 @@
-﻿namespace ConsoleDraw.Components.ComponentStyling
+﻿using ConsoleDraw.DoubleBuffer;
+using System;
+
+namespace ConsoleDraw.Components.ComponentStyling
 {
-    public interface IComponentLayout
+    public interface IComponentStyleAndLayout
     {
-        void SetSize(int w, int h);
+        void SetMinimumSize(int w, int h);
         void SetWrap(bool wrap);
         void SetBorder(bool border);
         void SetAnchorPoints(AnchorPoints[] anchorPoints);
         void SetHorizontalAlignment(HorizontalAlignment horizontalAlignment);
         void SetVerticalAlignment(VerticalAlignment verticalAlignment);
+        void SetComponentColors(ConsoleColor foregroundColor, ConsoleColor backgroundColor);
         void SetPosition(int left, int top);
         void SetMargin(int top, int right, int bottom, int left);
         void SetMargin(int top, int sides, int bottom);
@@ -19,5 +23,6 @@
         void SetPadding(int all);
         void SetComputedHeight(int height);
         LayoutDetails GetLayout();
+        void WriteColors(IConsoleBuffer buffer);
     }
 }

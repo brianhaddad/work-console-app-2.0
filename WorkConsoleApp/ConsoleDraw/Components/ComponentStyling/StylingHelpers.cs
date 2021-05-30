@@ -25,8 +25,8 @@ namespace ConsoleDraw.Components.ComponentStyling
 
         public static string[] PutInWindow(this string line, LayoutDetails layoutDetails, string winTitle = "")
         {
-            var needsWrap = line.Length > layoutDetails.InnerWidth;
-            var lines = needsWrap ? line.WordWrapLine(layoutDetails.InnerWidth) : new[] { line };
+            var needsWrap = line.Length > layoutDetails.InnerWidthInsidePadding;
+            var lines = needsWrap ? line.WordWrapLine(layoutDetails.InnerWidthInsidePadding) : new[] { line };
             return lines.PutInWindow(layoutDetails, winTitle);
         }
 
@@ -38,7 +38,7 @@ namespace ConsoleDraw.Components.ComponentStyling
             {
                 for (var i = 0; i < layoutDetails.MarginTop; i++)
                 {
-                    newLines.Add(RepeatCharacters(' ', layoutDetails.WidthWithMarginAndBorder));
+                    newLines.Add(RepeatCharacters(' ', layoutDetails.FillWidth));
                 }
             }
             //header area
@@ -48,25 +48,33 @@ namespace ConsoleDraw.Components.ComponentStyling
             }
             else if (layoutDetails.Border)
             {
-                var firstLine = WinUpperLeft + RepeatCharacters(WinHorizontal, layoutDetails.Width) + WinUpperRight;
-                newLines.Add(firstLine.AlignLine(HorizontalAlignment.Center, layoutDetails.WidthWithMarginAndBorder));
+                var firstLine = WinUpperLeft + RepeatCharacters(WinHorizontal, layoutDetails.InnerWidthInsideBorder) + WinUpperRight;
+                newLines.Add(firstLine.AlignLine(HorizontalAlignment.Center, layoutDetails.FillWidth));
             }
 
             //body area (need to use vertical alignment from the layout details to insert blank lines before and/or after this)
             for (var i = 0; i < lines.Length; i++)
             {
                 var innerAlignedLine = lines[i]
-                    .AlignLine(layoutDetails.TextAlign, layoutDetails.InnerWidth)
-                    .AlignLine(HorizontalAlignment.Center, layoutDetails.Width);
+                    .AlignLine(layoutDetails.TextAlign, layoutDetails.InnerWidthInsidePadding)
+                    .AlignLine(HorizontalAlignment.Center, layoutDetails.InnerWidthInsideBorder);
                 var newLine = layoutDetails.Border ? WinVertical + innerAlignedLine + WinVertical : innerAlignedLine;
-                newLines.Add(newLine.AlignLine(HorizontalAlignment.Center, layoutDetails.WidthWithMarginAndBorder));
+                newLines.Add(newLine.AlignLine(HorizontalAlignment.Center, layoutDetails.FillWidth));
             }
 
             //last line
             if (layoutDetails.Border)
             {
-                var lastLine = WinLowerLeft + RepeatCharacters(WinHorizontal, layoutDetails.Width) + WinLowerRight;
-                newLines.Add(lastLine.AlignLine(HorizontalAlignment.Center, layoutDetails.WidthWithMarginAndBorder));
+                var lastLine = WinLowerLeft + RepeatCharacters(WinHorizontal, layoutDetails.InnerWidthInsideBorder) + WinLowerRight;
+                newLines.Add(lastLine.AlignLine(HorizontalAlignment.Center, layoutDetails.FillWidth));
+            }
+
+            if (layoutDetails.MarginBottom > 0)
+            {
+                for (var i = 0; i < layoutDetails.MarginBottom; i++)
+                {
+                    newLines.Add(RepeatCharacters(' ', layoutDetails.FillWidth));
+                }
             }
 
             return newLines.ToArray();

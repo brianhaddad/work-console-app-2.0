@@ -22,6 +22,7 @@ namespace ConsoleDraw.Components.Text
         {
             var lines = Text.PutInWindow(Layout);
             ComponentLayout.SetComputedHeight(lines.Length);
+            ComponentLayout.WriteColors(ConsoleBuffer);
             for (var i = 0; i < lines.Length; i++)
             {
                 ConsoleBuffer.WriteLineToBuffer(lines[i], Layout.X, Layout.Y + i);

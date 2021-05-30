@@ -1,12 +1,13 @@
-﻿using System;
+﻿using ConsoleDraw.DoubleBuffer;
+using System;
 
 namespace ConsoleDraw.Components.ComponentStyling
 {
-    public class ComponentLayout : IComponentLayout
+    public class ComponentStyleAndLayout : IComponentStyleAndLayout
     {
         private int X = 0;
         private int Y = 0;
-        private int Width = 10;
+        private int MinimumWidth = 10;
         private int Height = 0;
         private bool Border = false;
         private int MarginTop = 0;
@@ -19,6 +20,8 @@ namespace ConsoleDraw.Components.ComponentStyling
         private int PaddingLeft = 0;
         private HorizontalAlignment TextAlign = HorizontalAlignment.Left;
         private VerticalAlignment VerticalAlign = VerticalAlignment.Top;
+        private ConsoleColor BackgroundColor = ConsoleColor.Black;
+        private ConsoleColor ForegroundColor = ConsoleColor.Gray;
         private int? ComputedHeight = null;
 
         public void SetAnchorPoints(AnchorPoints[] anchorPoints)
@@ -60,9 +63,9 @@ namespace ConsoleDraw.Components.ComponentStyling
             Y = top;
         }
 
-        public void SetSize(int w, int h)
+        public void SetMinimumSize(int w, int h)
         {
-            Width = w;
+            MinimumWidth = w;
             Height = h;
         }
 
@@ -92,8 +95,8 @@ namespace ConsoleDraw.Components.ComponentStyling
             {
                 X = X,
                 Y = Y,
-                Width = Width,
-                Height = Height,
+                FillWidth = MinimumWidth, //This can optionally be set to something larger, but not smaller
+                FillHeight = Height, //Same as width?
                 Border = Border,
                 MarginBottom = MarginBottom,
                 MarginLeft = MarginLeft,
@@ -111,6 +114,17 @@ namespace ConsoleDraw.Components.ComponentStyling
         public void SetComputedHeight(int height)
         {
             ComputedHeight = height;
+        }
+
+        public void SetComponentColors(ConsoleColor foregroundColor, ConsoleColor backgroundColor)
+        {
+            ForegroundColor = foregroundColor;
+            BackgroundColor = backgroundColor;
+        }
+
+        public void WriteColors(IConsoleBuffer buffer)
+        {
+            buffer.SetColors(ForegroundColor, BackgroundColor);
         }
     }
 }

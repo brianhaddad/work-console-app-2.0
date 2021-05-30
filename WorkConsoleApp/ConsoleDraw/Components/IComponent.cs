@@ -7,7 +7,7 @@ namespace ConsoleDraw.Components
     {
         void Update();
         void Draw(int originX, int originY);
-        void ConfigureComponentLayout(Action<ComponentLayout> action);
+        void ConfigureComponentLayout(Action<ComponentStyleAndLayout> action);
         void ReflowComponentLayout();
         void SetParent<T>(T parent) where T : BaseComponent;
         void SetText(string text);

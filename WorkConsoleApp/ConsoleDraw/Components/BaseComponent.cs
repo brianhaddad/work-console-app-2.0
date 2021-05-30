@@ -9,7 +9,7 @@ namespace ConsoleDraw.Components
         private protected BaseComponent Parent;
         private protected List<IComponent> Children = new List<IComponent>();
 
-        private protected readonly ComponentLayout ComponentLayout = new ComponentLayout();
+        private protected readonly ComponentStyleAndLayout ComponentLayout = new ComponentStyleAndLayout();
         private protected LayoutDetails Layout => ComponentLayout.GetLayout();
 
         private protected string Text = "";
@@ -68,7 +68,7 @@ namespace ConsoleDraw.Components
         /// There is probably no reason to override this, but I will allow it if you really must.
         /// </summary>
         /// <param name="action"></param>
-        public virtual void ConfigureComponentLayout(Action<ComponentLayout> action) => action(ComponentLayout);
+        public virtual void ConfigureComponentLayout(Action<ComponentStyleAndLayout> action) => action(ComponentLayout);
 
         /// <summary>
         /// This base Draw method activates the Draw method for all children and adjusts the origin for each.

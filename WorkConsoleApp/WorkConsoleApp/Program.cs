@@ -27,7 +27,6 @@ namespace WorkConsoleApp
             //TODO: need more factories to do initial setup on these guys, or maybe some kind of settings object.
             var buffer = container.Get<IConsoleBuffer>();
             buffer.WindowResizeEvent();
-            buffer.SetColors(ConsoleColor.Red, ConsoleColor.Black);
             var componentFactory = container.Get<IComponentFactory>();
             var text1 = componentFactory.MakeComponent<TextOutput>();
             text1.ConfigureComponentLayout((layout) => {
@@ -36,7 +35,8 @@ namespace WorkConsoleApp
                 layout.SetMargin(0);
                 layout.SetBorder(true);
                 layout.SetHorizontalAlignment(HorizontalAlignment.Left);
-                layout.SetSize(16, 0);
+                layout.SetMinimumSize(20, 0);
+                layout.SetComponentColors(ConsoleColor.Blue, ConsoleColor.White);
             });
             text1.SetText("This sentence is longer and more interesting.");
             var text2 = componentFactory.MakeComponent<TextOutput>();
@@ -46,7 +46,8 @@ namespace WorkConsoleApp
                 layout.SetMargin(0);
                 layout.SetBorder(true);
                 layout.SetHorizontalAlignment(HorizontalAlignment.Right);
-                layout.SetSize(20, 0);
+                layout.SetMinimumSize(20, 0);
+                layout.SetComponentColors(ConsoleColor.Green, ConsoleColor.Black);
             });
             text2.SetText("WorldWideWeb");
             text1.Draw(0, 0);
