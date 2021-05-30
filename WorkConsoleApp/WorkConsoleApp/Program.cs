@@ -50,8 +50,8 @@ namespace WorkConsoleApp
                 layout.SetComponentColors(ConsoleColor.Green, ConsoleColor.Black);
             });
             text2.SetText("WorldWideWeb");
-            text1.Draw(0, 0);
-            text2.Draw(0, 0);
+            text1.Draw(0, 0, 0, 0);
+            text2.Draw(0, 0, 0, 0);
             buffer.DrawBuffer();
             Console.ReadLine();
         }

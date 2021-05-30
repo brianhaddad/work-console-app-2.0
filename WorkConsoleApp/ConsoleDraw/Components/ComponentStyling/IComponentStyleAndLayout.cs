@@ -6,6 +6,7 @@ namespace ConsoleDraw.Components.ComponentStyling
     public interface IComponentStyleAndLayout
     {
         void SetMinimumSize(int w, int h);
+        void SetTargetSize(int w, int h);
         void SetWrap(bool wrap);
         void SetBorder(bool border);
         void SetAnchorPoints(AnchorPoints[] anchorPoints);

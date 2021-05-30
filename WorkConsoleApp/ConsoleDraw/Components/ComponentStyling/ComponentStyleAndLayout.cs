@@ -69,6 +69,12 @@ namespace ConsoleDraw.Components.ComponentStyling
             Height = h;
         }
 
+        public void SetTargetSize(int w, int h)
+        {
+            MinimumWidth = Math.Max(MinimumWidth, w);
+            Height = Math.Max(Height, h);
+        }
+
         public void SetWrap(bool wrap)
         {
             throw new NotImplementedException();

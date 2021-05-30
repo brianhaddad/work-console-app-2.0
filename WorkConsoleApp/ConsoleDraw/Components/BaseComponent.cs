@@ -9,8 +9,8 @@ namespace ConsoleDraw.Components
         private protected BaseComponent Parent;
         private protected List<IComponent> Children = new List<IComponent>();
 
-        private protected readonly ComponentStyleAndLayout ComponentLayout = new ComponentStyleAndLayout();
-        private protected LayoutDetails Layout => ComponentLayout.GetLayout();
+        private protected readonly ComponentStyleAndLayout ComponentStyleAndLayout = new ComponentStyleAndLayout();
+        private protected LayoutDetails Layout => ComponentStyleAndLayout.GetLayout();
 
         private protected string Text = "";
 
@@ -68,7 +68,7 @@ namespace ConsoleDraw.Components
         /// There is probably no reason to override this, but I will allow it if you really must.
         /// </summary>
         /// <param name="action"></param>
-        public virtual void ConfigureComponentLayout(Action<ComponentStyleAndLayout> action) => action(ComponentLayout);
+        public virtual void ConfigureComponentLayout(Action<ComponentStyleAndLayout> action) => action(ComponentStyleAndLayout);
 
         /// <summary>
         /// This base Draw method activates the Draw method for all children and adjusts the origin for each.
@@ -77,12 +77,13 @@ namespace ConsoleDraw.Components
         /// </summary>
         /// <param name="originX"></param>
         /// <param name="originY"></param>
-        public virtual void Draw(int originX, int originY)
+        public virtual void Draw(int originX, int originY, int fillWidth, int fillHeight)
         {
             //Not all components will have children, therefore not all components must call the base Draw.
+            //The base draw will not work for layout components that must compute a new width and height for each component.
             foreach (var child in Children)
             {
-                child.Draw(originX + Layout.X, originY + Layout.Y);
+                child.Draw(originX + Layout.X, originY + Layout.Y, fillWidth, fillHeight);
             }
         }
 

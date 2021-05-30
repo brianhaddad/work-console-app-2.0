@@ -18,16 +18,17 @@ namespace ConsoleDraw.Components.Text
             base.Update();
         }
 
-        public override void Draw(int originX, int originY)
+        public override void Draw(int originX, int originY, int fillWidth, int fillHeight)
         {
+            ComponentStyleAndLayout.SetTargetSize(fillWidth, fillHeight);
             var lines = Text.PutInWindow(Layout);
-            ComponentLayout.SetComputedHeight(lines.Length);
-            ComponentLayout.WriteColors(ConsoleBuffer);
+            ComponentStyleAndLayout.SetComputedHeight(lines.Length);
+            ComponentStyleAndLayout.WriteColors(ConsoleBuffer);
             for (var i = 0; i < lines.Length; i++)
             {
                 ConsoleBuffer.WriteLineToBuffer(lines[i], Layout.X, Layout.Y + i);
             }
-            base.Draw(originX, originY);
+            base.Draw(originX, originY, fillWidth, fillHeight);
         }
     }
 }
