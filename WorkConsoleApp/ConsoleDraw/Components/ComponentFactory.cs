@@ -1,4 +1,5 @@
 ﻿using BasicDependencyInjection;
+using ConsoleDraw.Components.ComponentStyling;
 using System;
 
 namespace ConsoleDraw.Components
@@ -14,5 +15,26 @@ namespace ConsoleDraw.Components
 
         public T MakeComponent<T>() where T : class, IComponent
             => Container.Create<T>();
+
+        public T MakeComponent<T>(Action<ComponentStyleAndLayout> styleSetup) where T : class, IComponent
+        {
+            var component = MakeComponent<T>();
+            component.ConfigureComponentLayout(styleSetup);
+            return component;
+        }
+
+        public T MakeComponent<T>(Action<T> componentSetup) where T : class, IComponent
+        {
+            var component = MakeComponent<T>();
+            componentSetup(component);
+            return component;
+        }
+
+        public T MakeComponent<T>(Action<T> componentSetup, Action<ComponentStyleAndLayout> styleSetup) where T : class, IComponent
+        {
+            var component = MakeComponent<T>(styleSetup);
+            componentSetup(component);
+            return component;
+        }
     }
 }
