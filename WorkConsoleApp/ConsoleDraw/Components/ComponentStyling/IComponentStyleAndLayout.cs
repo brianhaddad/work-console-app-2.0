@@ -13,6 +13,7 @@ namespace ConsoleDraw.Components.ComponentStyling
         void SetHorizontalAlignment(HorizontalAlignment horizontalAlignment);
         void SetVerticalAlignment(VerticalAlignment verticalAlignment);
         void SetComponentColors(ConsoleColor foregroundColor, ConsoleColor backgroundColor);
+        void SetHorizontalOverflow(HorizontalOverflow horizontalOverflow);
         void SetPosition(int left, int top);
         void SetMargin(int top, int right, int bottom, int left);
         void SetMargin(int top, int sides, int bottom);

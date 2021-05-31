@@ -25,6 +25,7 @@ namespace ConsoleDraw.Components.ComponentStyling
 
         public static string[] PutInWindow(this string line, LayoutDetails layoutDetails, string winTitle = "")
         {
+            //TODO: Use layoutDetails.HorizontalOverflow to determine whether we're goint to wrap things
             var needsWrap = line.Length > layoutDetails.InnerWidthInsidePadding;
             var lines = needsWrap ? line.WordWrapLine(layoutDetails.InnerWidthInsidePadding) : new[] { line };
             return lines.PutInWindow(layoutDetails, winTitle);
@@ -44,7 +45,7 @@ namespace ConsoleDraw.Components.ComponentStyling
             //header area
             if (!winTitle.IsNullEmptyOrWhitespace())
             {
-                //add the header using the overlay stuff
+                //TODO: add the header using the overlay stuff
             }
             else if (layoutDetails.Border)
             {

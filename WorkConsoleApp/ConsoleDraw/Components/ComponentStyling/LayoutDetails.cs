@@ -16,6 +16,7 @@
         public int PaddingLeft { get; set; }
         public HorizontalAlignment TextAlign { get; set; }
         public VerticalAlignment VerticalAlign { get; set; }
+        public HorizontalOverflow HorizontalOverflow { get; set; }
         public bool Border { get; set; }
 
         private int TotalPaddingWidth => PaddingLeft + PaddingRight;

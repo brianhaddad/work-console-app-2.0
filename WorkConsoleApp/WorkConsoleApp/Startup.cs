@@ -23,7 +23,7 @@ namespace WorkConsoleApp
 
         private static void RegisterComponents(IBasicContainer container)
         {
-            //TODO: use discovery to find all implementations of IComponent
+            //TODO: use discovery to find and register all implementations of IComponent
             container.Register<TextOutput>();
         }
     }

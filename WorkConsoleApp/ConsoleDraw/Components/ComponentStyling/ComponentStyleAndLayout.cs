@@ -22,6 +22,7 @@ namespace ConsoleDraw.Components.ComponentStyling
         private VerticalAlignment VerticalAlign = VerticalAlignment.Top;
         private ConsoleColor BackgroundColor = ConsoleColor.Black;
         private ConsoleColor ForegroundColor = ConsoleColor.Gray;
+        private HorizontalOverflow HorizontalOverflowBehavior = HorizontalOverflow.Wrap;
         private int? ComputedHeight = null;
 
         public void SetAnchorPoints(AnchorPoints[] anchorPoints)
@@ -95,6 +96,11 @@ namespace ConsoleDraw.Components.ComponentStyling
             TextAlign = horizontalAlignment;
         }
 
+        public void SetHorizontalOverflow(HorizontalOverflow horizontalOverflow)
+        {
+            HorizontalOverflowBehavior = horizontalOverflow;
+        }
+
         public LayoutDetails GetLayout()
         {
             return new LayoutDetails
@@ -114,6 +120,7 @@ namespace ConsoleDraw.Components.ComponentStyling
                 PaddingTop = PaddingTop,
                 TextAlign = TextAlign,
                 VerticalAlign = VerticalAlign,
+                HorizontalOverflow = HorizontalOverflowBehavior,
             };
         }
 
