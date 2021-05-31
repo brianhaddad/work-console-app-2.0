@@ -14,6 +14,11 @@ namespace ConsoleDraw.DoubleBuffer
         private int CombinedColorCode;
         private SortedDictionary<int, SortedList<int, int>> DrawDictionary = new SortedDictionary<int, SortedList<int, int>>();
         private SortedDictionary<int, int> DrawDictionaryReverseLookup = new SortedDictionary<int, int>();
+        private int DefaultCursorLeft = 0;
+        private int DefaultCursorTop = 0;
+        private bool DefaultCursorVisible = false;
+        private ConsoleColor DefaultForegroundColor = ConsoleColor.White;
+        private ConsoleColor DefaultBackgroundColor = ConsoleColor.Black;
 
         public int GetWidth() => Width;
         public int GetHeight() => Height;
@@ -21,6 +26,32 @@ namespace ConsoleDraw.DoubleBuffer
         public TextRenderBuffer()
         {
             TextBuffer = new char[MaxWidth * MaxHeight];
+        }
+
+        public void SetDefaultCursorData(int left = 0, int top = 0, bool visible = false, ConsoleColor foregroundColor = ConsoleColor.White, ConsoleColor backgroundColor = ConsoleColor.Black)
+        {
+            DefaultCursorLeft = left;
+            DefaultCursorTop = top;
+            DefaultCursorVisible = visible;
+            DefaultForegroundColor = foregroundColor;
+            DefaultBackgroundColor = backgroundColor;
+        }
+
+        public void ResetCursorToDefault()
+        {
+            Console.ForegroundColor = DefaultForegroundColor;
+            Console.BackgroundColor = DefaultBackgroundColor;
+            Console.SetWindowPosition(0, 0);
+            if (DefaultCursorLeft < Console.WindowWidth && DefaultCursorTop < Console.WindowHeight)
+            {
+                Console.CursorLeft = DefaultCursorLeft;
+                Console.CursorTop = DefaultCursorTop;
+                Console.CursorVisible = DefaultCursorVisible;
+            }
+            else
+            {
+                Console.CursorVisible = false;
+            }
         }
 
         public void FillBuffer(char fillCharacter = ' ')
@@ -43,7 +74,9 @@ namespace ConsoleDraw.DoubleBuffer
             Height = Math.Min(height, MaxHeight);
             if (Width != oldWidth || Height != oldHeight)
             {
+                Console.CursorVisible = false;
                 ForceClear();
+                ResetCursorToDefault();
             }
         }
 
@@ -98,7 +131,7 @@ namespace ConsoleDraw.DoubleBuffer
             {
                 for (var x = 0; x < Console.WindowWidth; x++)
                 {
-                    ProtectedXYWrite(x, y, " ");
+                    ProtectedXYWrite(x, y, ' ');
                 }
             }
             Console.Clear();
@@ -119,28 +152,22 @@ namespace ConsoleDraw.DoubleBuffer
                 var arr = dataKVP.Value.Keys.ToArray();
                 for (var i = 0; i < arr.Length; i++)
                 {
-                    if (Console.WindowWidth >= Width && Console.WindowHeight >= Height)
-                    {
-                        Console.CursorLeft = arr[i] % Width;
-                        Console.CursorTop = arr[i] / Width;
-                        Console.Write(TextBuffer[arr[i]]);
-                    }
+                    ProtectedXYWrite(arr[i] % Width, arr[i] / Width, TextBuffer[arr[i]]);
                 }
             }
-            Console.BackgroundColor = ConsoleColor.Black;
-            Console.ForegroundColor = ConsoleColor.Black;
-            Console.SetWindowPosition(0, 0);
+            ResetCursorToDefault();
         }
 
-        private void ProtectedXYWrite(int x, int y, string text)
+        private void ProtectedXYWrite(int x, int y, char character)
         {
             if (Console.WindowWidth >= Width
                 && Console.WindowHeight >= Height
-                && x < Console.WindowWidth)
+                && x < Console.WindowWidth
+                && y <= Console.WindowHeight)
             {
                 Console.CursorLeft = x;
                 Console.CursorTop = y;
-                Console.Write(text);
+                Console.Write(character);
             }
         }
     }
