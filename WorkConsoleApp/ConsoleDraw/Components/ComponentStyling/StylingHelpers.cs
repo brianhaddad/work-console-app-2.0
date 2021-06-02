@@ -53,6 +53,24 @@ namespace ConsoleDraw.Components.ComponentStyling
                 newLines.Add(firstLine.AlignLine(HorizontalAlignment.Center, layoutDetails.FillWidth));
             }
 
+            //TODO: padding should be calculated based on the number of content lines and the inner vertical height
+            //For now, just throw in a blank line before and after. That will be perfect, thanks.
+            if (layoutDetails.PaddingTop > 0)
+            {
+                for (var i = 0; i < layoutDetails.PaddingTop; i++)
+                {
+                    if (layoutDetails.Border)
+                    {
+                        var newLine = WinVertical + RepeatCharacters(' ', layoutDetails.InnerWidthInsideBorder) + WinVertical;
+                        newLines.Add(newLine.AlignLine(HorizontalAlignment.Center, layoutDetails.FillWidth));
+                    }
+                    else
+                    {
+                        newLines.Add(RepeatCharacters(' ', layoutDetails.FillWidth));
+                    }
+                }
+            }
+
             //body area (need to use vertical alignment from the layout details to insert blank lines before and/or after this)
             for (var i = 0; i < lines.Length; i++)
             {
@@ -61,6 +79,24 @@ namespace ConsoleDraw.Components.ComponentStyling
                     .AlignLine(HorizontalAlignment.Center, layoutDetails.InnerWidthInsideBorder);
                 var newLine = layoutDetails.Border ? WinVertical + innerAlignedLine + WinVertical : innerAlignedLine;
                 newLines.Add(newLine.AlignLine(HorizontalAlignment.Center, layoutDetails.FillWidth));
+            }
+
+            //TODO: padding should be calculated based on the number of content lines and the inner vertical height
+            //For now, just throw in a blank line before and after. That will be perfect, thanks.
+            if (layoutDetails.PaddingBottom > 0)
+            {
+                for (var i = 0; i < layoutDetails.PaddingBottom; i++)
+                {
+                    if (layoutDetails.Border)
+                    {
+                        var newLine = WinVertical + RepeatCharacters(' ', layoutDetails.InnerWidthInsideBorder) + WinVertical;
+                        newLines.Add(newLine.AlignLine(HorizontalAlignment.Center, layoutDetails.FillWidth));
+                    }
+                    else
+                    {
+                        newLines.Add(RepeatCharacters(' ', layoutDetails.FillWidth));
+                    }
+                }
             }
 
             //last line

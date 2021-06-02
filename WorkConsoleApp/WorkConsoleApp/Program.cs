@@ -36,10 +36,10 @@ namespace WorkConsoleApp
                 {
                     layout.SetPosition(0, 0);
                     layout.SetPadding(1);
-                    layout.SetMargin(0);
+                    layout.SetMargin(1);
                     layout.SetBorder(true);
                     layout.SetHorizontalAlignment(HorizontalAlignment.Center);
-                    layout.SetMinimumSize(20, 0);
+                    layout.SetMinimumSize(25, 0);
                     layout.SetComponentColors(ConsoleColor.Blue, ConsoleColor.White);
                 });
             var text2 = componentFactory.MakeComponent<TextOutput>(
