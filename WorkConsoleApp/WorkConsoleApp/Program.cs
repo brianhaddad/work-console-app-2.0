@@ -38,7 +38,7 @@ namespace WorkConsoleApp
                     layout.SetPadding(1);
                     layout.SetMargin(0);
                     layout.SetBorder(true);
-                    layout.SetHorizontalAlignment(HorizontalAlignment.Left);
+                    layout.SetHorizontalAlignment(HorizontalAlignment.Center);
                     layout.SetMinimumSize(20, 0);
                     layout.SetComponentColors(ConsoleColor.Blue, ConsoleColor.White);
                 });

@@ -3,6 +3,7 @@ using BasicDependencyInjection.Container;
 using ConsoleDraw.Components;
 using ConsoleDraw.Components.Text;
 using ConsoleDraw.DoubleBuffer;
+using WorkConsoleApp.DependencyInjection;
 
 namespace WorkConsoleApp
 {

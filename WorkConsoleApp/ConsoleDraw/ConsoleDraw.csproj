@@ -8,8 +8,4 @@
     <Folder Include="ScreenManagement\" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\BasicDependencyInjection\BasicDependencyInjection.csproj" />
-  </ItemGroup>
-
 </Project>

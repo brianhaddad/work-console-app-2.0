@@ -1,8 +1,9 @@
 ﻿using BasicDependencyInjection;
+using ConsoleDraw.Components;
 using ConsoleDraw.Components.ComponentStyling;
 using System;
 
-namespace ConsoleDraw.Components
+namespace WorkConsoleApp.DependencyInjection
 {
     public class ComponentFactory : IComponentFactory
     {
