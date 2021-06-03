@@ -83,7 +83,7 @@ namespace ConsoleDraw.Components
             //The base draw will not work for layout components that must compute a new width and height for each component.
             foreach (var child in Children)
             {
-                child.Draw(originX + Layout.X, originY + Layout.Y, fillWidth, fillHeight);
+                child.Draw(originX + Layout.X, originY + Layout.Y, Math.Min(fillWidth, Layout.InnerWidthInsidePadding), Math.Min(fillHeight, Layout.InnerHeightInsidePadding));
             }
         }
 

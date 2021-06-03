@@ -19,11 +19,19 @@
         public HorizontalOverflow HorizontalOverflow { get; set; }
         public bool Border { get; set; }
 
+        private int TotalBorderThickness => (Border ? 2 : 0);
+
         private int TotalPaddingWidth => PaddingLeft + PaddingRight;
+        private int TotalPaddingHeight => PaddingTop + PaddingBottom;
+
         private int TotalMarginWidth => MarginRight + MarginLeft;
-        private int TotalBorderWidth => (Border ? 2 : 0);
-        public int InnerWidthInsidePadding => FillWidth - TotalPaddingWidth - TotalMarginWidth - TotalBorderWidth;
-        public int InnerWidthInsideBorder => FillWidth - TotalMarginWidth - TotalBorderWidth;
+        private int TotalMarginHeight => MarginTop + MarginBottom;
+
+        public int InnerWidthInsidePadding => FillWidth - TotalPaddingWidth - TotalMarginWidth - TotalBorderThickness;
+        public int InnerHeightInsidePadding => FillHeight - TotalPaddingHeight - TotalBorderThickness;
+
+        public int InnerWidthInsideBorder => FillWidth - TotalMarginWidth - TotalBorderThickness;
+        public int InnerHeightInsideBorder => FillHeight - TotalMarginHeight - TotalBorderThickness;
         //Can't do computed height here, needs to live on the component.
     }
 }
