@@ -139,5 +139,14 @@ namespace ConsoleDraw.Components.ComponentStyling
         {
             buffer.SetColors(ForegroundColor, BackgroundColor);
         }
+
+        public int GetHeight()
+        {
+            if (ComputedHeight.HasValue)
+            {
+                return ComputedHeight.Value;
+            }
+            return Height;
+        }
     }
 }

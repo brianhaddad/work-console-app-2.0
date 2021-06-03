@@ -12,7 +12,10 @@ namespace ConsoleDraw.Components
         private protected readonly ComponentStyleAndLayout ComponentStyleAndLayout = new ComponentStyleAndLayout();
         private protected LayoutDetails Layout => ComponentStyleAndLayout.GetLayout();
 
+        public int Height => ComponentStyleAndLayout.GetHeight();
+
         private protected string Text = "";
+        private protected IEnumerable<string> Lines;
 
         /// <summary>
         /// This adds a child to the Children list.
@@ -24,6 +27,7 @@ namespace ConsoleDraw.Components
             if (!Children.Contains(child))
             {
                 Children.Add(child);
+                ReflowComponentLayout();
             }
         }
 
@@ -37,6 +41,7 @@ namespace ConsoleDraw.Components
             if (Children.Contains(child))
             {
                 Children.Remove(child);
+                ReflowComponentLayout();
             }
         }
 
@@ -77,13 +82,13 @@ namespace ConsoleDraw.Components
         /// </summary>
         /// <param name="originX"></param>
         /// <param name="originY"></param>
-        public virtual void Draw(int originX, int originY, int fillWidth, int fillHeight)
+        public virtual void Draw(int originX, int originY)
         {
             //Not all components will have children, therefore not all components must call the base Draw.
             //The base draw will not work for layout components that must compute a new width and height for each component.
             foreach (var child in Children)
             {
-                child.Draw(originX + Layout.X, originY + Layout.Y, Math.Min(fillWidth, Layout.InnerWidthInsidePadding), Math.Min(fillHeight, Layout.InnerHeightInsidePadding));
+                child.Draw(originX + Layout.X, originY + Layout.Y);
             }
         }
 

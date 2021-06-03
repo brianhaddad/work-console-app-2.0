@@ -1,6 +1,7 @@
 ﻿using ConsoleDraw.Components.ComponentStyling;
 using ConsoleDraw.DoubleBuffer;
 using System;
+using System.Linq;
 
 namespace ConsoleDraw.Components.Text
 {
@@ -18,17 +19,21 @@ namespace ConsoleDraw.Components.Text
             base.Update();
         }
 
-        public override void Draw(int originX, int originY, int fillWidth, int fillHeight)
+        public override void ReflowComponentLayout()
         {
-            ComponentStyleAndLayout.SetTargetSize(fillWidth, fillHeight);
-            var lines = Text.PutInWindow(Layout);
-            ComponentStyleAndLayout.SetComputedHeight(lines.Length);
+            Lines = Text.PutInWindow(Layout);
+            ComponentStyleAndLayout.SetComputedHeight(Lines.Count());
+        }
+
+        public override void Draw(int originX, int originY)
+        {
             ComponentStyleAndLayout.WriteColors(ConsoleBuffer);
+            var lines = Lines.ToArray();
             for (var i = 0; i < lines.Length; i++)
             {
                 ConsoleBuffer.WriteLineToBuffer(lines[i], Layout.X, Layout.Y + i);
             }
-            base.Draw(originX, originY, fillWidth, fillHeight);
+            base.Draw(originX, originY);
         }
     }
 }

@@ -25,6 +25,7 @@ namespace ConsoleDraw.Components.ComponentStyling
         void SetPadding(int all);
         void SetComputedHeight(int height);
         LayoutDetails GetLayout();
+        int GetHeight();
         void WriteColors(IConsoleBuffer buffer);
     }
 }

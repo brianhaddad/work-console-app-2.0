@@ -1,7 +1,9 @@
 ﻿using ConsoleDraw.Components;
 using ConsoleDraw.Components.ComponentStyling;
+using ConsoleDraw.Components.Layout;
 using ConsoleDraw.Components.Text;
 using ConsoleDraw.DoubleBuffer;
+using ConsoleDraw.Services;
 using System;
 
 namespace WorkConsoleApp
@@ -27,38 +29,22 @@ namespace WorkConsoleApp
             var buffer = container.Get<IConsoleBuffer>();
             buffer.WindowResizeEvent();
             var componentFactory = container.Get<IComponentFactory>();
-            var text1 = componentFactory.MakeComponent<TextOutput>(
-                (component) =>
-                {
-                    component.SetText("This sentence is longer and more interesting.");
-                },
-                (layout) =>
-                {
-                    layout.SetPosition(0, 0);
-                    layout.SetPadding(1);
-                    layout.SetMargin(1);
-                    layout.SetBorder(true);
-                    layout.SetHorizontalAlignment(HorizontalAlignment.Center);
-                    layout.SetMinimumSize(25, 0);
-                    layout.SetComponentColors(ConsoleColor.Blue, ConsoleColor.White);
-                });
-            var text2 = componentFactory.MakeComponent<TextOutput>(
-                (component) =>
-                {
-                    component.SetText("WorldWideWeb");
-                }, 
-                (layout) =>
-                {
-                    layout.SetPosition(25, 10);
-                    layout.SetPadding(0);
-                    layout.SetMargin(0);
-                    layout.SetBorder(true);
-                    layout.SetHorizontalAlignment(HorizontalAlignment.Right);
-                    layout.SetMinimumSize(20, 0);
-                    layout.SetComponentColors(ConsoleColor.Green, ConsoleColor.Black);
-                });
-            text1.Draw(0, 0, 0, 0);
-            text2.Draw(0, 0, 0, 0);
+            var componentBuilder = container.Get<IComponentBuilder>();
+
+            var layoutComponent = componentFactory.MakeComponent<VerticalLayout>((layout) =>
+            {
+                layout.SetPosition(0, 0);
+                layout.SetTargetSize(Console.WindowWidth / 2, Console.WindowHeight);
+                layout.SetPadding(0);
+                layout.SetMargin(0);
+            });
+
+            componentBuilder.BuildTextComponent("This sentence is longer and more interesting.", ConsoleColor.Red, ConsoleColor.Black, layoutComponent);
+            componentBuilder.BuildTextComponent("Something witty.", ConsoleColor.White, ConsoleColor.DarkBlue, layoutComponent, border: true, horizontalAlignment: HorizontalAlignment.Right);
+
+            layoutComponent.ReflowComponentLayout();
+            layoutComponent.Draw(0, 0);
+
             buffer.DrawBuffer();
             Console.ReadLine();
         }
