@@ -15,7 +15,7 @@ namespace WorkConsoleApp.DependencyInjection
         }
 
         public T MakeComponent<T>() where T : class, IComponent
-            => Container.Create<T>();
+            => Container.Get<T>();
 
         public T MakeComponent<T>(Action<ComponentStyleAndLayout> styleSetup) where T : class, IComponent
         {

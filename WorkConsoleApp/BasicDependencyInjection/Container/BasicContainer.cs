@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using BasicDependencyInjection.Enums;
 using BasicDependencyInjection.Exceptions;
 
 namespace BasicDependencyInjection.Container
@@ -8,28 +9,45 @@ namespace BasicDependencyInjection.Container
     public class BasicContainer : IBasicContainer
     {
         private readonly Dictionary<Type, Type> ConcreteTypeLookup = new Dictionary<Type, Type>();
-        private readonly Dictionary<Type, object> TypeObjects = new Dictionary<Type, object>();
+        private readonly Dictionary<Type, Scope> ScopeLookup = new Dictionary<Type, Scope>();
+        private readonly Dictionary<Type, object> Singletons = new Dictionary<Type, object>();
+        private Scope DefaultScope = Scope.Singleton;
         private bool Verified = false;
         private bool Verifying = false;
+        private bool Registering = false;
 
         public BasicContainer()
         {
-            Register(typeof(IBasicContainer), GetType());
-            TypeObjects.Add(typeof(IBasicContainer), this);
+            Register(typeof(IBasicContainer), GetType(), Scope.Singleton);
+            Singletons.Add(typeof(IBasicContainer), this);
         }
 
+        public void Register<TInterface, TImplementation>(Scope scope) where TImplementation : TInterface
+            => Register(typeof(TInterface), typeof(TImplementation), scope);
         public void Register<TInterface, TImplementation>() where TImplementation : TInterface
-            => Register(typeof(TInterface), typeof(TImplementation));
-        public void Register<T>() => Register<T, T>();
-        public void Register(Type type) => Register(type, type);
+            => Register<TInterface, TImplementation>(DefaultScope);
 
-        private void Register(Type interfaceType, Type implementationType)
+        public void Register<T>(Scope scope) => Register<T, T>(scope);
+        public void Register<T>() => Register<T>(DefaultScope);
+
+        public void Register(Type type, Scope scope) => Register(type, type, scope);
+        public void Register(Type type) => Register(type, DefaultScope);
+
+        private void Register(Type interfaceType, Type implementationType, Scope scope)
         {
+            if (Verified || Verifying)
+            {
+                throw new AlreadyVerifiedException($"Illegal operation: Attempted to register {interfaceType.FullName} after verification.");
+            }
+
+            Registering = true;
+
             if (ConcreteTypeLookup.ContainsKey(interfaceType))
             {
                 throw new AlreadyRegisteredException($"{interfaceType.FullName} has already been registered.");
             }
             ConcreteTypeLookup.Add(interfaceType, implementationType);
+            ScopeLookup.Add(interfaceType, scope);
         }
 
         private object Create(Type type)
@@ -63,43 +81,77 @@ namespace BasicDependencyInjection.Container
                 throw new UnverifiedContainerException("You must verify the container in order to use it.");
             }
             var t = typeof(T);
+
+            var scope = ScopeLookup.ContainsKey(t) ? ScopeLookup[t] : DefaultScope;
             if (Verifying)
             {
-                return Create(t) as T;
+                scope = Scope.PerRequest;
             }
-            if (!TypeObjects.ContainsKey(t))
+
+            switch (scope)
             {
-                TypeObjects.Add(t, Create(t));
+                case Scope.Singleton:
+                    if (!Singletons.ContainsKey(t))
+                    {
+                        Singletons.Add(t, Create(t));
+                    }
+                    return Singletons[t] as T;
+
+                case Scope.PerRequest:
+                    return Create(t) as T;
+
+                default:
+                    throw new UnhandledScopeException(scope);
             }
-            return TypeObjects[t] as T;
         }
 
-
-        public T Create<T>() where T : class
-            => (T)Create(typeof(T));
-
+        /// <summary>
+        /// Verification can be performed once to ensure that every dependency requested can be resolved.
+        /// </summary>
         public void Verify()
         {
+            if (Verified || Verifying)
+            {
+                throw new AlreadyVerifiedException("Cannot verify more than once.");
+            }
+
             Verifying = true;
-            var currentType = "";
+            var currentType = ConcreteTypeLookup.Keys.ToArray()[0];
             try
             {
                 foreach (var kvp in ConcreteTypeLookup)
                 {
-                    if (!TypeObjects.ContainsKey(kvp.Key))
+                    if (!Singletons.ContainsKey(kvp.Key))
                     {
-                        currentType = kvp.Key.FullName;
+                        currentType = kvp.Key;
                         var result = Create(kvp.Key);
                     }
                 }
             }
             catch (Exception e)
             {
-                Console.WriteLine($"Something went wrong while registering {currentType}.");
-                Console.WriteLine(e);
+                throw new ContainerVerificationException($"Something went wrong while registering {currentType.FullName}.", e, currentType);
             }
             Verifying = false;
             Verified = true;
+        }
+
+        /// <summary>
+        /// Here you can change the default scope for the container.
+        /// The default scope cannot be changed after the first registration, and certainly not after verification.
+        /// </summary>
+        /// <param name="scope"></param>
+        public void SetDefaultScope(Scope scope)
+        {
+            if (Verified || Verifying)
+            {
+                throw new AlreadyVerifiedException("Cannot change the default scope after verification.");
+            }
+            if (Registering)
+            {
+                throw new IllegalContainerModificationException("Cannot change the default scope after the first registrations have been done.");
+            }
+            DefaultScope = scope;
         }
     }
 }
