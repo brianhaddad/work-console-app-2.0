@@ -47,12 +47,7 @@ namespace BasicDependencyInjection.Container
 
         private void RegisterMany(Type interfaceType, IEnumerable<Assembly> assemblies, Scope scope)
         {
-            if (Verified || Verifying)
-            {
-                throw new AlreadyVerifiedException($"Illegal operation: Attempted to register {interfaceType.FullName} after verification.");
-            }
-
-            Registering = true;
+            PreRegistrationCheck();
 
             var enumerableType = typeof(IEnumerable<>);
             var typeToRegister = enumerableType.MakeGenericType(interfaceType);
@@ -79,12 +74,7 @@ namespace BasicDependencyInjection.Container
 
         private void Register(Type interfaceType, Type implementationType, Scope scope)
         {
-            if (Verified || Verifying)
-            {
-                throw new AlreadyVerifiedException($"Illegal operation: Attempted to register {interfaceType.FullName} after verification.");
-            }
-
-            Registering = true;
+            PreRegistrationCheck();
 
             if (ConcreteTypeLookup.ContainsKey(interfaceType))
             {
@@ -92,6 +82,16 @@ namespace BasicDependencyInjection.Container
             }
             ConcreteTypeLookup.Add(interfaceType, implementationType);
             ScopeLookup.Add(interfaceType, scope);
+        }
+
+        private void PreRegistrationCheck()
+        {
+            if (Verified || Verifying)
+            {
+                throw new AlreadyVerifiedException($"Illegal operation: Attempted to register {interfaceType.FullName} after verification.");
+            }
+
+            Registering = true;
         }
 
         private object Create(Type type)
