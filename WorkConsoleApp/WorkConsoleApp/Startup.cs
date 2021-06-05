@@ -3,8 +3,6 @@ using BasicDependencyInjection.Container;
 using BasicDependencyInjection.Enums;
 using BasicDependencyInjection.Exceptions;
 using ConsoleDraw.Components;
-using ConsoleDraw.Components.Layout;
-using ConsoleDraw.Components.Text;
 using ConsoleDraw.DoubleBuffer;
 using ConsoleDraw.Services;
 using System;
@@ -20,7 +18,7 @@ namespace WorkConsoleApp
 
             container.Register<IComponentFactory, ComponentFactory>(Scope.Singleton);
             container.Register<IComponentBuilder, ComponentBuilder>(Scope.Singleton);
-            RegisterComponents(container);
+            container.RegisterMany<IComponent>(typeof(BaseComponent).Assembly, Scope.Transient);
 
             container.Register<IConsoleBuffer, TextRenderBuffer>(Scope.Singleton);
 
@@ -35,15 +33,6 @@ namespace WorkConsoleApp
             }
 
             return container;
-        }
-
-        private static void RegisterComponents(IBasicContainer container)
-        {
-            //TODO: use discovery to find and register all implementations of IComponent
-            //Or modify the container to register based on an interface or base class they all implement
-            //and allow a collection IEnumerable<T> be requested/injected where T is the shared interface.
-            container.Register<TextOutput>(Scope.PerRequest);
-            container.Register<VerticalLayout>(Scope.PerRequest);
         }
     }
 }

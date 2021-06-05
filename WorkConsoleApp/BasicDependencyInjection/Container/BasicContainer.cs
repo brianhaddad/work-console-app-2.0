@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using BasicDependencyInjection.Enums;
 using BasicDependencyInjection.Exceptions;
 
@@ -8,7 +9,9 @@ namespace BasicDependencyInjection.Container
 {
     public class BasicContainer : IBasicContainer
     {
+        //TODO: dictionary of FUNC to contain instantiating methods? Is this even possible?
         private readonly Dictionary<Type, Type> ConcreteTypeLookup = new Dictionary<Type, Type>();
+        private readonly Dictionary<Type, IEnumerable<Type>> CollectionTypeLookup = new Dictionary<Type, IEnumerable<Type>>();
         private readonly Dictionary<Type, Scope> ScopeLookup = new Dictionary<Type, Scope>();
         private readonly Dictionary<Type, object> Singletons = new Dictionary<Type, object>();
         private Scope DefaultScope = Scope.Singleton;
@@ -22,16 +25,57 @@ namespace BasicDependencyInjection.Container
             Singletons.Add(typeof(IBasicContainer), this);
         }
 
-        public void Register<TInterface, TImplementation>(Scope scope) where TImplementation : TInterface
+        public void Register<TInterface, TImplementation>(Scope scope) where TImplementation : class, TInterface
             => Register(typeof(TInterface), typeof(TImplementation), scope);
-        public void Register<TInterface, TImplementation>() where TImplementation : TInterface
+        public void Register<TInterface, TImplementation>() where TImplementation : class, TInterface
             => Register<TInterface, TImplementation>(DefaultScope);
 
-        public void Register<T>(Scope scope) => Register<T, T>(scope);
-        public void Register<T>() => Register<T>(DefaultScope);
+        public void Register<T>(Scope scope) where T : class => Register<T, T>(scope);
+        public void Register<T>() where T : class => Register<T>(DefaultScope);
 
         public void Register(Type type, Scope scope) => Register(type, type, scope);
         public void Register(Type type) => Register(type, DefaultScope);
+
+        public void RegisterMany<T>(Assembly assembly) where T : class
+            => RegisterMany<T>(assembly, DefaultScope);
+        public void RegisterMany<T>(Assembly assembly, Scope scope) where T : class
+            => RegisterMany<T>(new[] { assembly }, scope);
+        public void RegisterMany<T>(IEnumerable<Assembly> assemblies) where T : class
+            => RegisterMany<T>(assemblies, DefaultScope);
+        public void RegisterMany<T>(IEnumerable<Assembly> assemblies, Scope scope) where T : class
+            => RegisterMany(typeof(T), assemblies, scope);
+
+        private void RegisterMany(Type interfaceType, IEnumerable<Assembly> assemblies, Scope scope)
+        {
+            if (Verified || Verifying)
+            {
+                throw new AlreadyVerifiedException($"Illegal operation: Attempted to register {interfaceType.FullName} after verification.");
+            }
+
+            Registering = true;
+
+            var EnumerableType = typeof(IEnumerable<>);
+            var TypeToRegister = EnumerableType.MakeGenericType(interfaceType);
+            var registrations = new List<Type>();
+
+            foreach (var assembly in assemblies)
+            {
+                var found = assembly.GetTypes().Where(t => !(t.IsInterface || t.IsAbstract) && t.GetInterfaces().Contains(interfaceType));
+                foreach (var t in found)
+                {
+                    Register(t, scope);
+                }
+                registrations.AddRange(found);
+            }
+
+            if (!registrations.Any())
+            {
+                throw new NoImplementationsFoundException($"No implementations of {interfaceType.FullName} found in the provided assemblies.");
+            }
+
+            CollectionTypeLookup.Add(TypeToRegister, registrations);
+            ScopeLookup.Add(TypeToRegister, scope);
+        }
 
         private void Register(Type interfaceType, Type implementationType, Scope scope)
         {
@@ -52,26 +96,43 @@ namespace BasicDependencyInjection.Container
 
         private object Create(Type type)
         {
-            if (!ConcreteTypeLookup.ContainsKey(type))
+            if (ConcreteTypeLookup.ContainsKey(type))
             {
-                throw new NoMatchingRegistrationException($"{type.FullName} not registered.");
+                var concreteType = ConcreteTypeLookup[type];
+                //TODO: Instead of just a default first constructor can I analyze them somehow? Would there be any benefit?
+                var firstConstructor = concreteType.GetConstructors()[0];
+                var constructorParameters = firstConstructor.GetParameters();
+                var get = GetType().GetMethod(nameof(BasicContainer.Get));
+                var parameters = constructorParameters.Select((param) => {
+                    var getGeneric = get.MakeGenericMethod(param.ParameterType);
+                    return getGeneric.Invoke(this, null);
+                }).ToArray();
+                var obj = firstConstructor.Invoke(parameters);
+                return obj;
             }
-            //TODO: Does this work with generics?!?
-            var concreteType = ConcreteTypeLookup[type];
-            //TODO: Instead of just a default first constructor can I analyze them somehow?
-            var firstConstructor = concreteType.GetConstructors()[0];
-            //TODO: Verify if the default constructor requires parameters?
-            var constructorParameters = firstConstructor.GetParameters();
-            //TODO: Some parameters might not be classes that need to be instantiated.
-            //Can we detect these and look in a separate collection where factories or generators have been registered?
-            //HOW TO HANDLE?!? :)
+            if (CollectionTypeLookup.ContainsKey(type))
+            {
+                var subtype = type.GetGenericArguments().First();
+                var makeCollection = GetType().GetMethod(nameof(BasicContainer.MakeTypeCollection), BindingFlags.NonPublic | BindingFlags.Instance);
+                var makeGeneric = makeCollection.MakeGenericMethod(new[] { type, subtype });
+                var result = makeGeneric.Invoke(this, null);
+                return result;
+            }
+            throw new NoMatchingRegistrationException($"{type.FullName} not registered.");
+        }
+
+        private T MakeTypeCollection<T, ST>() where T : class where ST : class
+        {
+            var objs = new List<ST>();
+            var type = typeof(T);
             var get = GetType().GetMethod(nameof(BasicContainer.Get));
-            var parameters = constructorParameters.Select((param) => {
-                var getGeneric = get.MakeGenericMethod(param.ParameterType);
-                return getGeneric.Invoke(this, null);
-            }).ToArray();
-            var obj = firstConstructor.Invoke(parameters);
-            return obj;
+            foreach (var t in CollectionTypeLookup[type])
+            {
+                var getGeneric = get.MakeGenericMethod(t);
+                var result = getGeneric.Invoke(this, null) as ST;
+                objs.Add(result);
+            }
+            return objs as T;
         }
 
         public T Get<T>() where T : class
@@ -85,7 +146,7 @@ namespace BasicDependencyInjection.Container
             var scope = ScopeLookup.ContainsKey(t) ? ScopeLookup[t] : DefaultScope;
             if (Verifying)
             {
-                scope = Scope.PerRequest;
+                scope = Scope.Transient;
             }
 
             switch (scope)
@@ -97,8 +158,9 @@ namespace BasicDependencyInjection.Container
                     }
                     return Singletons[t] as T;
 
-                case Scope.PerRequest:
-                    return Create(t) as T;
+                case Scope.Transient:
+                    var result = Create(t);
+                    return result as T;
 
                 default:
                     throw new UnhandledScopeException(scope);

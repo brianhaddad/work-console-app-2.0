@@ -3,6 +3,6 @@
     public enum Scope
     {
         Singleton,
-        PerRequest,
+        Transient,
     }
 }

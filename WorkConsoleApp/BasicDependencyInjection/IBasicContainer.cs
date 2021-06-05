@@ -1,20 +1,23 @@
 ﻿using BasicDependencyInjection.Enums;
 using System;
+using System.Collections.Generic;
+using System.Reflection;
 
 namespace BasicDependencyInjection
 {
     public interface IBasicContainer
     {
         void SetDefaultScope(Scope scope);
-        void Register<TInterface, TImplementation>() where TImplementation : TInterface;
-        void Register<T>();
+        void Register<TInterface, TImplementation>() where TImplementation : class, TInterface;
+        void Register<T>() where T : class;
         void Register(Type type);
-        void Register<TInterface, TImplementation>(Scope scope) where TImplementation : TInterface;
-        void Register<T>(Scope scope);
+        void Register<TInterface, TImplementation>(Scope scope) where TImplementation : class, TInterface;
+        void Register<T>(Scope scope) where T : class;
         void Register(Type type, Scope scope);
-        //TODO: make a RegisterMany<T>(IEnumerable<Assembly> assemblies) and some overloads (only one assembly, with scope, etc.)
-        //This will scan the assembly for anything that implements the interface or base class.
-        //Must not register "concretes" that are abstract or interfaces though.
+        void RegisterMany<T>(Assembly assembly) where T : class;
+        void RegisterMany<T>(Assembly assembly, Scope scope) where T : class;
+        void RegisterMany<T>(IEnumerable<Assembly> assemblies) where T : class;
+        void RegisterMany<T>(IEnumerable<Assembly> assemblies, Scope scope) where T : class;
         T Get<T>() where T : class;
         void Verify();
     }

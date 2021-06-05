@@ -1,7 +1,6 @@
 ﻿using ConsoleDraw.Components;
 using ConsoleDraw.Components.ComponentStyling;
 using ConsoleDraw.Components.Layout;
-using ConsoleDraw.Components.Text;
 using ConsoleDraw.DoubleBuffer;
 using ConsoleDraw.Services;
 using System;
