@@ -54,8 +54,8 @@ namespace BasicDependencyInjection.Container
 
             Registering = true;
 
-            var EnumerableType = typeof(IEnumerable<>);
-            var TypeToRegister = EnumerableType.MakeGenericType(interfaceType);
+            var enumerableType = typeof(IEnumerable<>);
+            var typeToRegister = enumerableType.MakeGenericType(interfaceType);
             var registrations = new List<Type>();
 
             foreach (var assembly in assemblies)
@@ -73,8 +73,8 @@ namespace BasicDependencyInjection.Container
                 throw new NoImplementationsFoundException($"No implementations of {interfaceType.FullName} found in the provided assemblies.");
             }
 
-            CollectionTypeLookup.Add(TypeToRegister, registrations);
-            ScopeLookup.Add(TypeToRegister, scope);
+            CollectionTypeLookup.Add(typeToRegister, registrations);
+            ScopeLookup.Add(typeToRegister, scope);
         }
 
         private void Register(Type interfaceType, Type implementationType, Scope scope)
