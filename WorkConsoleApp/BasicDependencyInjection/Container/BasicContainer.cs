@@ -47,7 +47,7 @@ namespace BasicDependencyInjection.Container
 
         private void RegisterMany(Type interfaceType, IEnumerable<Assembly> assemblies, Scope scope)
         {
-            PreRegistrationCheck();
+            PreRegistrationCheck(interfaceType.FullName);
 
             var enumerableType = typeof(IEnumerable<>);
             var typeToRegister = enumerableType.MakeGenericType(interfaceType);
@@ -74,7 +74,7 @@ namespace BasicDependencyInjection.Container
 
         private void Register(Type interfaceType, Type implementationType, Scope scope)
         {
-            PreRegistrationCheck();
+            PreRegistrationCheck(interfaceType.FullName);
 
             if (ConcreteTypeLookup.ContainsKey(interfaceType))
             {
@@ -84,11 +84,11 @@ namespace BasicDependencyInjection.Container
             ScopeLookup.Add(interfaceType, scope);
         }
 
-        private void PreRegistrationCheck()
+        private void PreRegistrationCheck(string typeName)
         {
             if (Verified || Verifying)
             {
-                throw new AlreadyVerifiedException($"Illegal operation: Attempted to register {interfaceType.FullName} after verification.");
+                throw new AlreadyVerifiedException($"Illegal operation: Attempted to register {typeName} after verification.");
             }
 
             Registering = true;
@@ -102,11 +102,7 @@ namespace BasicDependencyInjection.Container
                 //TODO: Instead of just a default first constructor can I analyze them somehow? Would there be any benefit?
                 var firstConstructor = concreteType.GetConstructors()[0];
                 var constructorParameters = firstConstructor.GetParameters();
-                var get = GetType().GetMethod(nameof(BasicContainer.Get));
-                var parameters = constructorParameters.Select((param) => {
-                    var getGeneric = get.MakeGenericMethod(param.ParameterType);
-                    return getGeneric.Invoke(this, null);
-                }).ToArray();
+                var parameters = constructorParameters.Select(param => GetObject(param.ParameterType)).ToArray();
                 var obj = firstConstructor.Invoke(parameters);
                 return obj;
             }
@@ -125,15 +121,21 @@ namespace BasicDependencyInjection.Container
         {
             var objs = new List<ST>();
             var type = typeof(T);
-            var get = GetType().GetMethod(nameof(BasicContainer.Get));
             foreach (var t in CollectionTypeLookup[type])
             {
-                var getGeneric = get.MakeGenericMethod(t);
-                var result = getGeneric.Invoke(this, null) as ST;
-                objs.Add(result);
+                objs.Add(GetObject<ST>(t));
             }
             return objs as T;
         }
+
+        private object GetObject(Type t)
+        {
+            var get = GetType().GetMethod(nameof(BasicContainer.Get));
+            var getGeneric = get.MakeGenericMethod(t);
+            return getGeneric.Invoke(this, null);
+        }
+
+        private T GetObject<T>(Type t) where T : class => GetObject(t) as T;
 
         public T Get<T>() where T : class
         {
@@ -178,17 +180,14 @@ namespace BasicDependencyInjection.Container
             }
 
             Verifying = true;
-            var currentType = ConcreteTypeLookup.Keys.ToArray()[0];
+            Type currentType = null;
             try
             {
-                foreach (var kvp in ConcreteTypeLookup)
-                {
-                    if (!Singletons.ContainsKey(kvp.Key))
-                    {
-                        currentType = kvp.Key;
-                        var result = Create(kvp.Key);
-                    }
-                }
+                VerifyConcreteTypes(ref currentType);
+                //Verifying the collection types might be a bit redundant since each element is also registered in the concrete types.
+                //But what can I say? I'm very thorough and since verification only happens once I'm not worried about optimizations.
+                //It also serves to verify that nothing was registered that I can't resolve. :)
+                VerifyCollectionTypes(ref currentType);
             }
             catch (Exception e)
             {
@@ -196,6 +195,29 @@ namespace BasicDependencyInjection.Container
             }
             Verifying = false;
             Verified = true;
+        }
+
+        private void VerifyConcreteTypes(ref Type currentType)
+        {
+            currentType = ConcreteTypeLookup.Keys.ToArray()[0];
+            foreach (var kvp in ConcreteTypeLookup)
+            {
+                if (!Singletons.ContainsKey(kvp.Key))
+                {
+                    currentType = kvp.Key;
+                    var result = Create(kvp.Key);
+                }
+            }
+        }
+
+        private void VerifyCollectionTypes(ref Type currentType)
+        {
+            currentType = CollectionTypeLookup.Keys.ToArray()[0];
+            foreach (var kvp in CollectionTypeLookup)
+            {
+                currentType = kvp.Key;
+                var result = Create(kvp.Key);
+            }
         }
 
         /// <summary>
