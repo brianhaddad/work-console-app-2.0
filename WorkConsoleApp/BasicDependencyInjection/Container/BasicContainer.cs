@@ -23,6 +23,7 @@ namespace BasicDependencyInjection.Container
         {
             Register(typeof(IBasicContainer), GetType(), Scope.Singleton);
             Singletons.Add(typeof(IBasicContainer), this);
+            Registering = false;
         }
 
         public void Register<TInterface, TImplementation>(Scope scope) where TImplementation : class, TInterface
