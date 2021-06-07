@@ -9,12 +9,12 @@ namespace BasicDependencyInjection.Container
 {
     public class BasicContainer : IBasicContainer
     {
-        //TODO: dictionary of FUNC to contain instantiating methods? Is this even possible?
+        private readonly Dictionary<Type, Func<object>> TypeInstantiators = new Dictionary<Type, Func<object>>();
         private readonly Dictionary<Type, Type> ConcreteTypeLookup = new Dictionary<Type, Type>();
         private readonly Dictionary<Type, IEnumerable<Type>> CollectionTypeLookup = new Dictionary<Type, IEnumerable<Type>>();
         private readonly Dictionary<Type, Scope> ScopeLookup = new Dictionary<Type, Scope>();
         private readonly Dictionary<Type, object> Singletons = new Dictionary<Type, object>();
-        private Scope DefaultScope = Scope.Singleton;
+        private Scope DefaultScope = Scope.Transient;
         private bool Verified = false;
         private bool Verifying = false;
         private bool Registering = false;
@@ -45,17 +45,27 @@ namespace BasicDependencyInjection.Container
         public void RegisterMany<T>(IEnumerable<Assembly> assemblies, Scope scope) where T : class
             => RegisterMany(typeof(T), assemblies, scope);
 
+        public void Register<T>(Func<T> instantiator) where T : class => Register(instantiator, DefaultScope);
+
+        public void Register<T>(Func<T> instantiator, Scope scope) where T : class
+        {
+            var t = typeof(T);
+            PreRegistrationCheck(t);
+            TypeInstantiators.Add(t, instantiator);
+            ScopeLookup.Add(t, scope);
+        }
+
         public void RegisterSingleton<T>(T obj) where T : class
         {
             var t = typeof(T);
-            PreRegistrationCheck(t.FullName);
+            PreRegistrationCheck(t);
             Singletons.Add(t, obj);
             ScopeLookup.Add(t, Scope.Singleton);
         }
 
         private void RegisterMany(Type interfaceType, IEnumerable<Assembly> assemblies, Scope scope)
         {
-            PreRegistrationCheck(interfaceType.FullName);
+            PreRegistrationCheck(interfaceType);
 
             var enumerableType = typeof(IEnumerable<>);
             var typeToRegister = enumerableType.MakeGenericType(interfaceType);
@@ -82,7 +92,7 @@ namespace BasicDependencyInjection.Container
 
         private void Register(Type interfaceType, Type implementationType, Scope scope)
         {
-            PreRegistrationCheck(interfaceType.FullName);
+            PreRegistrationCheck(interfaceType);
 
             if (ConcreteTypeLookup.ContainsKey(interfaceType))
             {
@@ -92,11 +102,11 @@ namespace BasicDependencyInjection.Container
             ScopeLookup.Add(interfaceType, scope);
         }
 
-        private void PreRegistrationCheck(string typeName)
+        private void PreRegistrationCheck(Type t)
         {
             if (Verified || Verifying)
             {
-                throw new AlreadyVerifiedException($"Illegal operation: Attempted to register {typeName} after verification.");
+                throw new AlreadyVerifiedException($"Illegal operation: Attempted to register {t.FullName} after verification.");
             }
 
             Registering = true;
@@ -104,6 +114,10 @@ namespace BasicDependencyInjection.Container
 
         private object Create(Type type)
         {
+            if (TypeInstantiators.ContainsKey(type))
+            {
+                return TypeInstantiators[type].Invoke();
+            }
             if (ConcreteTypeLookup.ContainsKey(type))
             {
                 var concreteType = ConcreteTypeLookup[type];
@@ -192,6 +206,7 @@ namespace BasicDependencyInjection.Container
             try
             {
                 VerifyConcreteTypes(ref currentType);
+                VerifyTypeInstantiators(ref currentType);
                 //Verifying the collection types might be a bit redundant since each element is also registered in the concrete types.
                 //But what can I say? I'm very thorough and since verification only happens once I'm not worried about optimizations.
                 //It also serves to verify that nothing was registered that I can't resolve. :)
@@ -199,10 +214,11 @@ namespace BasicDependencyInjection.Container
             }
             catch (Exception e)
             {
-                throw new ContainerVerificationException($"Something went wrong while registering {currentType.FullName}.", e, currentType);
+                throw new ContainerVerificationException($"Something went wrong while verifying {currentType.FullName}.", e, currentType);
             }
             Verifying = false;
             Verified = true;
+            Registering = false;
         }
 
         private void VerifyConcreteTypes(ref Type currentType)
@@ -222,6 +238,16 @@ namespace BasicDependencyInjection.Container
         {
             currentType = CollectionTypeLookup.Keys.ToArray()[0];
             foreach (var kvp in CollectionTypeLookup)
+            {
+                currentType = kvp.Key;
+                var result = Create(kvp.Key);
+            }
+        }
+
+        private void VerifyTypeInstantiators(ref Type currentType)
+        {
+            currentType = TypeInstantiators.Keys.ToArray()[0];
+            foreach (var kvp in TypeInstantiators)
             {
                 currentType = kvp.Key;
                 var result = Create(kvp.Key);

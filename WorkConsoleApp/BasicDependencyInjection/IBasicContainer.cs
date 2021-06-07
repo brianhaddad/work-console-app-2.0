@@ -10,6 +10,8 @@ namespace BasicDependencyInjection
         void SetDefaultScope(Scope scope);
         void Register<TInterface, TImplementation>() where TImplementation : class, TInterface;
         void Register<T>() where T : class;
+        void Register<T>(Func<T> instantiator) where T : class;
+        void Register<T>(Func<T> instantiator, Scope scope) where T : class;
         void Register(Type type);
         void Register<TInterface, TImplementation>(Scope scope) where TImplementation : class, TInterface;
         void Register<T>(Scope scope) where T : class;
