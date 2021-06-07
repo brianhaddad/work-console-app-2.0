@@ -205,12 +205,12 @@ namespace BasicDependencyInjection.Container
             Type currentType = null;
             try
             {
-                VerifyConcreteTypes(ref currentType);
-                VerifyTypeInstantiators(ref currentType);
+                Verify(ConcreteTypeLookup, ref currentType);
+                Verify(TypeInstantiators, ref currentType);
                 //Verifying the collection types might be a bit redundant since each element is also registered in the concrete types.
                 //But what can I say? I'm very thorough and since verification only happens once I'm not worried about optimizations.
                 //It also serves to verify that nothing was registered that I can't resolve. :)
-                VerifyCollectionTypes(ref currentType);
+                Verify(CollectionTypeLookup, ref currentType);
             }
             catch (Exception e)
             {
@@ -221,36 +221,13 @@ namespace BasicDependencyInjection.Container
             Registering = false;
         }
 
-        private void VerifyConcreteTypes(ref Type currentType)
+        private void Verify<T>(IDictionary<Type, T> typeLookupDictionary, ref Type currentType)
         {
-            currentType = ConcreteTypeLookup.Keys.ToArray()[0];
-            foreach (var kvp in ConcreteTypeLookup)
+            var keys = typeLookupDictionary.Keys.ToArray();
+            foreach (var key in keys)
             {
-                if (!Singletons.ContainsKey(kvp.Key))
-                {
-                    currentType = kvp.Key;
-                    var result = Create(kvp.Key);
-                }
-            }
-        }
-
-        private void VerifyCollectionTypes(ref Type currentType)
-        {
-            currentType = CollectionTypeLookup.Keys.ToArray()[0];
-            foreach (var kvp in CollectionTypeLookup)
-            {
-                currentType = kvp.Key;
-                var result = Create(kvp.Key);
-            }
-        }
-
-        private void VerifyTypeInstantiators(ref Type currentType)
-        {
-            currentType = TypeInstantiators.Keys.ToArray()[0];
-            foreach (var kvp in TypeInstantiators)
-            {
-                currentType = kvp.Key;
-                var result = Create(kvp.Key);
+                currentType = key;
+                var result = Create(currentType);
             }
         }
 
