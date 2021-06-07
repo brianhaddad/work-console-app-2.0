@@ -45,6 +45,14 @@ namespace BasicDependencyInjection.Container
         public void RegisterMany<T>(IEnumerable<Assembly> assemblies, Scope scope) where T : class
             => RegisterMany(typeof(T), assemblies, scope);
 
+        public void RegisterSingleton<T>(T obj) where T : class
+        {
+            var t = typeof(T);
+            PreRegistrationCheck(t.FullName);
+            Singletons.Add(t, obj);
+            ScopeLookup.Add(t, Scope.Singleton);
+        }
+
         private void RegisterMany(Type interfaceType, IEnumerable<Assembly> assemblies, Scope scope)
         {
             PreRegistrationCheck(interfaceType.FullName);
@@ -78,7 +86,7 @@ namespace BasicDependencyInjection.Container
 
             if (ConcreteTypeLookup.ContainsKey(interfaceType))
             {
-                throw new AlreadyRegisteredException($"{interfaceType.FullName} has already been registered.");
+                throw new AlreadyRegisteredException($"{interfaceType.FullName} has already been registered. Did you want to use RegisterMany?");
             }
             ConcreteTypeLookup.Add(interfaceType, implementationType);
             ScopeLookup.Add(interfaceType, scope);

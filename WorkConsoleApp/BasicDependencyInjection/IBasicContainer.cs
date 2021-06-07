@@ -14,6 +14,7 @@ namespace BasicDependencyInjection
         void Register<TInterface, TImplementation>(Scope scope) where TImplementation : class, TInterface;
         void Register<T>(Scope scope) where T : class;
         void Register(Type type, Scope scope);
+        void RegisterSingleton<T>(T obj) where T : class;
         void RegisterMany<T>(Assembly assembly) where T : class;
         void RegisterMany<T>(Assembly assembly, Scope scope) where T : class;
         void RegisterMany<T>(IEnumerable<Assembly> assemblies) where T : class;
