@@ -8,6 +8,6 @@ namespace BasicDependencyInjection.Exceptions
         public ContainerVerificationException(string message, Exception innerException, Type type) : base(message, innerException)
         {
             Type = type;
-        } 
+        }
     }
 }

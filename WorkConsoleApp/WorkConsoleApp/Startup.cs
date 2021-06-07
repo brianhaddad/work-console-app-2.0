@@ -26,7 +26,7 @@ namespace WorkConsoleApp
             {
                 container.Verify();
             }
-            catch(ContainerVerificationException e)
+            catch (ContainerVerificationException e)
             {
                 Console.WriteLine($"Verification error: {e.Message}");
                 Console.WriteLine(e.InnerException.ToString());

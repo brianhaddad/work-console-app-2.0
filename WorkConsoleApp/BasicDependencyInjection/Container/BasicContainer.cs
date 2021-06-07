@@ -1,9 +1,9 @@
-﻿using System;
+﻿using BasicDependencyInjection.Enums;
+using BasicDependencyInjection.Exceptions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using BasicDependencyInjection.Enums;
-using BasicDependencyInjection.Exceptions;
 
 namespace BasicDependencyInjection.Container
 {

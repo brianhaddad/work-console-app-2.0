@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace ConsoleDraw.Components.ComponentStyling
 {
@@ -34,7 +31,7 @@ namespace ConsoleDraw.Components.ComponentStyling
         public static string[] PutInWindow(this string[] lines, LayoutDetails layoutDetails, string winTitle = "")
         {
             var newLines = new List<string>();
-            
+
             if (layoutDetails.MarginTop > 0)
             {
                 for (var i = 0; i < layoutDetails.MarginTop; i++)
