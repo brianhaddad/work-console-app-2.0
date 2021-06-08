@@ -1,6 +1,6 @@
 ﻿namespace ConsoleDraw.Components.ComponentStyling
 {
-    public enum HorizontalOverflow
+    public enum Overflow
     {
         Wrap,
         CutOff,

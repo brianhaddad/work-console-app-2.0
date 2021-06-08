@@ -16,7 +16,10 @@
         public int PaddingLeft { get; set; }
         public HorizontalAlignment TextAlign { get; set; }
         public VerticalAlignment VerticalAlign { get; set; }
-        public HorizontalOverflow HorizontalOverflow { get; set; }
+        public Overflow HorizontalOverflow { get; set; }
+        public Overflow VerticalOverflow { get; set; }
+        public SpaceFilling HorizontalSpaceFilling { get; set; }
+        public SpaceFilling VerticalSpaceFilling { get; set; }
         public bool Border { get; set; }
 
         private int TotalBorderThickness => (Border ? 2 : 0);

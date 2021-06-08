@@ -22,11 +22,15 @@ namespace ConsoleDraw.Components.ComponentStyling
         private VerticalAlignment VerticalAlign = VerticalAlignment.Top;
         private ConsoleColor BackgroundColor = ConsoleColor.Black;
         private ConsoleColor ForegroundColor = ConsoleColor.Gray;
-        private HorizontalOverflow HorizontalOverflowBehavior = HorizontalOverflow.Wrap;
+        private Overflow HorizontalOverflowBehavior = Overflow.Wrap;
+        private Overflow VerticalOverflowBehavior = Overflow.Wrap;
+        private SpaceFilling HorizontalSpaceFillingBehavior = SpaceFilling.Natural;
+        private SpaceFilling VerticalSpaceFillingBehavior = SpaceFilling.Natural;
         private int? ComputedHeight = null;
 
         public void SetAnchorPoints(AnchorPoints[] anchorPoints)
         {
+            //TODO: do I need anchor points really? Maybe not.
             throw new NotImplementedException();
         }
 
@@ -76,11 +80,6 @@ namespace ConsoleDraw.Components.ComponentStyling
             Height = Math.Max(Height, h);
         }
 
-        public void SetWrap(bool wrap)
-        {
-            throw new NotImplementedException();
-        }
-
         public void SetBorder(bool border)
         {
             Border = border;
@@ -96,9 +95,24 @@ namespace ConsoleDraw.Components.ComponentStyling
             TextAlign = horizontalAlignment;
         }
 
-        public void SetHorizontalOverflow(HorizontalOverflow horizontalOverflow)
+        public void SetHorizontalOverflow(Overflow horizontalOverflow)
         {
             HorizontalOverflowBehavior = horizontalOverflow;
+        }
+
+        public void SetVerticalOverflow(Overflow verticalOverflow)
+        {
+            VerticalOverflowBehavior = verticalOverflow;
+        }
+
+        public void SetHorizontalSpaceFilling(SpaceFilling horizontalSpaceFilling)
+        {
+            HorizontalSpaceFillingBehavior = horizontalSpaceFilling;
+        }
+
+        public void SetVerticalSpaceFilling(SpaceFilling verticalSpaceFilling)
+        {
+            VerticalSpaceFillingBehavior = verticalSpaceFilling;
         }
 
         public LayoutDetails GetLayout()
@@ -121,6 +135,9 @@ namespace ConsoleDraw.Components.ComponentStyling
                 TextAlign = TextAlign,
                 VerticalAlign = VerticalAlign,
                 HorizontalOverflow = HorizontalOverflowBehavior,
+                VerticalOverflow = VerticalOverflowBehavior,
+                HorizontalSpaceFilling = HorizontalSpaceFillingBehavior,
+                VerticalSpaceFilling = VerticalSpaceFillingBehavior,
             };
         }
 

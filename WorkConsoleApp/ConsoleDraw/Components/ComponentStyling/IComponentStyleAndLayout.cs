@@ -7,13 +7,15 @@ namespace ConsoleDraw.Components.ComponentStyling
     {
         void SetMinimumSize(int w, int h);
         void SetTargetSize(int w, int h);
-        void SetWrap(bool wrap);
         void SetBorder(bool border);
         void SetAnchorPoints(AnchorPoints[] anchorPoints);
         void SetHorizontalAlignment(HorizontalAlignment horizontalAlignment);
         void SetVerticalAlignment(VerticalAlignment verticalAlignment);
         void SetComponentColors(ConsoleColor foregroundColor, ConsoleColor backgroundColor);
-        void SetHorizontalOverflow(HorizontalOverflow horizontalOverflow);
+        void SetHorizontalOverflow(Overflow horizontalOverflow);
+        void SetVerticalOverflow(Overflow verticalOverflow);
+        void SetHorizontalSpaceFilling(SpaceFilling horizontalSpaceFilling);
+        void SetVerticalSpaceFilling(SpaceFilling verticalSpaceFilling);
         void SetPosition(int left, int top);
         void SetMargin(int top, int right, int bottom, int left);
         void SetMargin(int top, int sides, int bottom);
