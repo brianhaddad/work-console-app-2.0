@@ -33,9 +33,10 @@ namespace WorkConsoleApp
             var layoutComponent = componentFactory.MakeComponent<VerticalLayout>((layout) =>
             {
                 layout.SetPosition(0, 0);
-                layout.SetTargetSize(Console.WindowWidth / 2, Console.WindowHeight);
+                layout.SetTargetSize(Console.WindowWidth, Console.WindowHeight);
                 layout.SetPadding(0);
                 layout.SetMargin(0);
+                layout.SetBorder(true);
             });
 
             componentBuilder.BuildTextComponent("This sentence is longer and more interesting.", ConsoleColor.Red, ConsoleColor.Black, layoutComponent);

@@ -22,7 +22,9 @@
         public SpaceFilling VerticalSpaceFilling { get; set; }
         public bool Border { get; set; }
 
-        private int TotalBorderThickness => (Border ? 2 : 0);
+        public int BorderThickness => Border ? 1 : 0;
+
+        private int TotalBorderThickness => BorderThickness * 2;
 
         private int TotalPaddingWidth => PaddingLeft + PaddingRight;
         private int TotalPaddingHeight => PaddingTop + PaddingBottom;

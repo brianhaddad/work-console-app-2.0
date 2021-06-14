@@ -4,8 +4,8 @@
     {
         public override void ReflowComponentLayout()
         {
-            var x = 0;
-            var y = 0;
+            var x = Layout.BorderThickness;
+            var y = Layout.BorderThickness;
             foreach (var child in Children)
             {
                 child.ConfigureComponentLayout((config) =>

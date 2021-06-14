@@ -27,7 +27,8 @@ namespace ConsoleDraw.Components.ComponentStyling
             var lines = needsWrap ? line.WordWrapLine(layoutDetails.InnerWidthInsidePadding) : new[] { line };
             return lines.PutInWindow(layoutDetails, winTitle);
         }
-
+        
+        //TODO: factor out the border drawing or refactor this to work with empty text and a set size?
         public static string[] PutInWindow(this string[] lines, LayoutDetails layoutDetails, string winTitle = "")
         {
             var newLines = new List<string>();
