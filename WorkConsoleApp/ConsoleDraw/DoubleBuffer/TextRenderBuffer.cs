@@ -8,12 +8,14 @@ namespace ConsoleDraw.DoubleBuffer
     {
         private readonly int MaxWidth = Console.LargestWindowWidth;
         private readonly int MaxHeight = Console.LargestWindowHeight;
-        private readonly char[] TextBuffer;
+        private readonly char[] CurrentCharacterBuffer;
+        private readonly char[] PreviousCharacterBuffer;
+        private readonly bool[] NeedToRedraw;
         private int Width = 0;
         private int Height = 0;
         private int CombinedColorCode;
-        private SortedDictionary<int, SortedList<int, int>> DrawDictionary = new SortedDictionary<int, SortedList<int, int>>();
-        private SortedDictionary<int, int> DrawDictionaryReverseLookup = new SortedDictionary<int, int>();
+        private SortedDictionary<int, SortedList<int, int>> LocationsByColor = new SortedDictionary<int, SortedList<int, int>>();
+        private SortedDictionary<int, int> ColorByLocation = new SortedDictionary<int, int>();
         private int DefaultCursorLeft = 0;
         private int DefaultCursorTop = 0;
         private bool DefaultCursorVisible = false;
@@ -25,7 +27,9 @@ namespace ConsoleDraw.DoubleBuffer
 
         public TextRenderBuffer()
         {
-            TextBuffer = new char[MaxWidth * MaxHeight];
+            CurrentCharacterBuffer = new char[MaxWidth * MaxHeight];
+            PreviousCharacterBuffer = new char[MaxWidth * MaxHeight];
+            NeedToRedraw = new bool[MaxWidth * MaxHeight];
         }
 
         public void SetDefaultCursorData(int left = 0, int top = 0, bool visible = false, ConsoleColor foregroundColor = ConsoleColor.White, ConsoleColor backgroundColor = ConsoleColor.Black)
@@ -56,11 +60,11 @@ namespace ConsoleDraw.DoubleBuffer
 
         public void FillBuffer(char fillCharacter = ' ')
         {
-            DrawDictionary = new SortedDictionary<int, SortedList<int, int>>();
-            DrawDictionaryReverseLookup = new SortedDictionary<int, int>();
-            for (var i = 0; i < TextBuffer.Length; i++)
+            LocationsByColor = new SortedDictionary<int, SortedList<int, int>>();
+            ColorByLocation = new SortedDictionary<int, int>();
+            for (var i = 0; i < CurrentCharacterBuffer.Length; i++)
             {
-                TextBuffer[i] = fillCharacter;
+                CurrentCharacterBuffer[i] = fillCharacter;
             }
         }
 
@@ -88,7 +92,8 @@ namespace ConsoleDraw.DoubleBuffer
             var start = (y * Width) + x;
             for (var i = 0; i < text.Length; i++)
             {
-                TextBuffer[start + i] = text[i];
+                CurrentCharacterBuffer[start + i] = text[i];
+                NeedToRedraw[start + i] = PreviousCharacterBuffer[start + i] != text[i];
                 LogColorPosition(start + i);
             }
         }
@@ -104,22 +109,29 @@ namespace ConsoleDraw.DoubleBuffer
 
         private void LogColorPosition(int index)
         {
-            if (DrawDictionaryReverseLookup.ContainsKey(index))
+            //first check and see if we've already stored a different color for this location
+            if (ColorByLocation.ContainsKey(index) && ColorByLocation[index] != CombinedColorCode)
             {
-                DrawDictionary[DrawDictionaryReverseLookup[index]].Remove(index);
-                DrawDictionaryReverseLookup[index] = CombinedColorCode;
+                //if so, we need to tell that color that this location won't be that color anymore and we should redraw this location.
+                NeedToRedraw[index] = true;
+                LocationsByColor[ColorByLocation[index]].Remove(index); //remove this location from the draw list for the previous color.
+                ColorByLocation[index] = CombinedColorCode; //set the current color as the correct color for this location
+            }
+            else if (!ColorByLocation.ContainsKey(index))
+            {
+                //if not, we can tell this location what color it will be
+                ColorByLocation.Add(index, CombinedColorCode);
+            }
+            //next check to see if we're currently tracking locations for this color combination
+            if (LocationsByColor.ContainsKey(CombinedColorCode))
+            {
+                //if so, just add this location to that color
+                LocationsByColor[CombinedColorCode].Add(index, index);
             }
             else
             {
-                DrawDictionaryReverseLookup.Add(index, CombinedColorCode);
-            }
-            if (DrawDictionary.ContainsKey(CombinedColorCode))
-            {
-                DrawDictionary[CombinedColorCode].Add(index, index);
-            }
-            else
-            {
-                DrawDictionary.Add(CombinedColorCode, new SortedList<int, int> { { index, index } });
+                //if not, create a new entry and initialize the list with this location as the first entry
+                LocationsByColor.Add(CombinedColorCode, new SortedList<int, int> { { index, index } });
             }
         }
 
@@ -131,30 +143,32 @@ namespace ConsoleDraw.DoubleBuffer
             {
                 for (var x = 0; x < Console.WindowWidth; x++)
                 {
+                    NeedToRedraw[(y * Console.WindowWidth) + x] = false;
                     ProtectedXYWrite(x, y, ' ');
                 }
             }
             Console.Clear();
         }
 
-        //Stream writer flush method:
-        //https://blog.anarks2.com/Buffered-dotnet-console-1/
-        //Doesn't support setting the position or changing colors though. :(
-        //Also Console.OpenStandardInput() doesn't get a stream that can be written to here for some reason.
         public void DrawBuffer()
         {
             Console.CursorVisible = false;
             Console.SetWindowPosition(0, 0);
-            foreach (var dataKVP in DrawDictionary)
+            foreach (var dataKVP in LocationsByColor)
             {
                 Console.BackgroundColor = DecodeBackgroundColor(dataKVP.Key);
                 Console.ForegroundColor = DecodeForegroundColor(dataKVP.Key);
                 var arr = dataKVP.Value.Keys.ToArray();
                 for (var i = 0; i < arr.Length; i++)
                 {
-                    ProtectedXYWrite(arr[i] % Width, arr[i] / Width, TextBuffer[arr[i]]);
+                    if (NeedToRedraw[arr[i]])
+                    {
+                        ProtectedXYWrite(arr[i] % Width, arr[i] / Width, CurrentCharacterBuffer[arr[i]]);
+                        NeedToRedraw[arr[i]] = false;
+                    }
                 }
             }
+            Array.Copy(CurrentCharacterBuffer, PreviousCharacterBuffer, CurrentCharacterBuffer.Length);
             ResetCursorToDefault();
         }
 
