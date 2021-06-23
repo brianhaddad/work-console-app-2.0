@@ -44,6 +44,14 @@ namespace ConsoleDraw.Components.ComponentStyling
             if (!winTitle.IsNullEmptyOrWhitespace())
             {
                 //TODO: add the header using the overlay stuff
+                if (layoutDetails.Border)
+                {
+                    //need to do new stuff
+                }
+                else
+                {
+                    //need to position the title text
+                }
             }
             else if (layoutDetails.Border)
             {
