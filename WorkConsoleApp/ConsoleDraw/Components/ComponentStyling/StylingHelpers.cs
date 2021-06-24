@@ -20,7 +20,7 @@ namespace ConsoleDraw.Components.ComponentStyling
         private const char WinLowerLeft = '\u255A';
         private const char WinLowerRight = '\u255D';
 
-        public static string[] PutInWindow(this string line, LayoutDetails layoutDetails, string winTitle = "")
+        public static string[] PutInWindow(this string line, StyleDetails layoutDetails, string winTitle = "")
         {
             //TODO: Use layoutDetails.HorizontalOverflow to determine whether we're goint to wrap things
             var needsWrap = line.Length > layoutDetails.InnerWidthInsidePadding;
@@ -29,7 +29,7 @@ namespace ConsoleDraw.Components.ComponentStyling
         }
         
         //TODO: factor out the border drawing or refactor this to work with empty text and a set size?
-        public static string[] PutInWindow(this string[] lines, LayoutDetails layoutDetails, string winTitle = "")
+        public static string[] PutInWindow(this string[] lines, StyleDetails layoutDetails, string winTitle = "")
         {
             var newLines = new List<string>();
 
@@ -37,7 +37,7 @@ namespace ConsoleDraw.Components.ComponentStyling
             {
                 for (var i = 0; i < layoutDetails.MarginTop; i++)
                 {
-                    newLines.Add(RepeatCharacters(' ', layoutDetails.FillWidth));
+                    newLines.Add(RepeatCharacters(' ', layoutDetails.SpaceToFillWidth));
                 }
             }
             //header area
@@ -56,7 +56,7 @@ namespace ConsoleDraw.Components.ComponentStyling
             else if (layoutDetails.Border)
             {
                 var firstLine = WinUpperLeft + RepeatCharacters(WinHorizontal, layoutDetails.InnerWidthInsideBorder) + WinUpperRight;
-                newLines.Add(firstLine.AlignLine(HorizontalAlignment.Center, layoutDetails.FillWidth));
+                newLines.Add(firstLine.AlignLine(HorizontalAlignment.Center, layoutDetails.SpaceToFillWidth));
             }
 
             //TODO: padding should be calculated based on the number of content lines and the inner vertical height
@@ -68,11 +68,11 @@ namespace ConsoleDraw.Components.ComponentStyling
                     if (layoutDetails.Border)
                     {
                         var newLine = WinVertical + RepeatCharacters(' ', layoutDetails.InnerWidthInsideBorder) + WinVertical;
-                        newLines.Add(newLine.AlignLine(HorizontalAlignment.Center, layoutDetails.FillWidth));
+                        newLines.Add(newLine.AlignLine(HorizontalAlignment.Center, layoutDetails.SpaceToFillWidth));
                     }
                     else
                     {
-                        newLines.Add(RepeatCharacters(' ', layoutDetails.FillWidth));
+                        newLines.Add(RepeatCharacters(' ', layoutDetails.SpaceToFillWidth));
                     }
                 }
             }
@@ -84,7 +84,7 @@ namespace ConsoleDraw.Components.ComponentStyling
                     .AlignLine(layoutDetails.TextAlign, layoutDetails.InnerWidthInsidePadding)
                     .AlignLine(HorizontalAlignment.Center, layoutDetails.InnerWidthInsideBorder);
                 var newLine = layoutDetails.Border ? WinVertical + innerAlignedLine + WinVertical : innerAlignedLine;
-                newLines.Add(newLine.AlignLine(HorizontalAlignment.Center, layoutDetails.FillWidth));
+                newLines.Add(newLine.AlignLine(HorizontalAlignment.Center, layoutDetails.SpaceToFillWidth));
             }
 
             //TODO: padding should be calculated based on the number of content lines and the inner vertical height
@@ -96,11 +96,11 @@ namespace ConsoleDraw.Components.ComponentStyling
                     if (layoutDetails.Border)
                     {
                         var newLine = WinVertical + RepeatCharacters(' ', layoutDetails.InnerWidthInsideBorder) + WinVertical;
-                        newLines.Add(newLine.AlignLine(HorizontalAlignment.Center, layoutDetails.FillWidth));
+                        newLines.Add(newLine.AlignLine(HorizontalAlignment.Center, layoutDetails.SpaceToFillWidth));
                     }
                     else
                     {
-                        newLines.Add(RepeatCharacters(' ', layoutDetails.FillWidth));
+                        newLines.Add(RepeatCharacters(' ', layoutDetails.SpaceToFillWidth));
                     }
                 }
             }
@@ -109,14 +109,14 @@ namespace ConsoleDraw.Components.ComponentStyling
             if (layoutDetails.Border)
             {
                 var lastLine = WinLowerLeft + RepeatCharacters(WinHorizontal, layoutDetails.InnerWidthInsideBorder) + WinLowerRight;
-                newLines.Add(lastLine.AlignLine(HorizontalAlignment.Center, layoutDetails.FillWidth));
+                newLines.Add(lastLine.AlignLine(HorizontalAlignment.Center, layoutDetails.SpaceToFillWidth));
             }
 
             if (layoutDetails.MarginBottom > 0)
             {
                 for (var i = 0; i < layoutDetails.MarginBottom; i++)
                 {
-                    newLines.Add(RepeatCharacters(' ', layoutDetails.FillWidth));
+                    newLines.Add(RepeatCharacters(' ', layoutDetails.SpaceToFillWidth));
                 }
             }
 

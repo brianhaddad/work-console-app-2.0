@@ -26,7 +26,7 @@ namespace ConsoleDraw.Components.ComponentStyling
         private Overflow VerticalOverflowBehavior = Overflow.Wrap;
         private SpaceFilling HorizontalSpaceFillingBehavior = SpaceFilling.Natural;
         private SpaceFilling VerticalSpaceFillingBehavior = SpaceFilling.Natural;
-        private int? ComputedHeight = null;
+        private int? NumberOfLines = null;
 
         public void SetAnchorPoints(AnchorPoints[] anchorPoints)
         {
@@ -115,14 +115,15 @@ namespace ConsoleDraw.Components.ComponentStyling
             VerticalSpaceFillingBehavior = verticalSpaceFilling;
         }
 
-        public LayoutDetails GetLayout()
+        public StyleDetails GetLayout()
         {
-            return new LayoutDetails
+            return new StyleDetails
             {
                 X = X,
                 Y = Y,
-                FillWidth = MinimumWidth, //This can optionally be set to something larger, but not smaller
-                FillHeight = Height, //Same as width?
+                SpaceToFillWidth = MinimumWidth, //This can optionally be set to something larger, but not smaller
+                SpaceToFillHeight = Height, //Same as width?
+                ContentLines = NumberOfLines,
                 Border = Border,
                 MarginBottom = MarginBottom,
                 MarginLeft = MarginLeft,
@@ -141,9 +142,9 @@ namespace ConsoleDraw.Components.ComponentStyling
             };
         }
 
-        public void SetComputedHeight(int height)
+        public void SetNumberOfLines(int numLines)
         {
-            ComputedHeight = height;
+            NumberOfLines = numLines;
         }
 
         public void SetComponentColors(ConsoleColor foregroundColor, ConsoleColor backgroundColor)
@@ -159,9 +160,9 @@ namespace ConsoleDraw.Components.ComponentStyling
 
         public int GetHeight()
         {
-            if (ComputedHeight.HasValue)
+            if (NumberOfLines.HasValue)
             {
-                return ComputedHeight.Value;
+                return NumberOfLines.Value;
             }
             return Height;
         }

@@ -1,6 +1,7 @@
 ﻿using ConsoleDraw.Components.ComponentStyling;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ConsoleDraw.Components
 {
@@ -10,7 +11,7 @@ namespace ConsoleDraw.Components
         private protected List<IComponent> Children = new List<IComponent>();
 
         private protected readonly ComponentStyleAndLayout ComponentStyleAndLayout = new ComponentStyleAndLayout();
-        private protected LayoutDetails Layout => ComponentStyleAndLayout.GetLayout();
+        private protected StyleDetails Layout => ComponentStyleAndLayout.GetLayout();
 
         public int Height => ComponentStyleAndLayout.GetHeight();
 
@@ -105,6 +106,7 @@ namespace ConsoleDraw.Components
         /// </summary>
         public virtual void ReflowComponentLayout()
         {
+            ComponentStyleAndLayout.SetNumberOfLines(Lines.Count());
         }
     }
 }
