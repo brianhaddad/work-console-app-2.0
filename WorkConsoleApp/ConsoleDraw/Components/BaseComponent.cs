@@ -13,7 +13,7 @@ namespace ConsoleDraw.Components
         private protected readonly ComponentStyleAndLayout ComponentStyleAndLayout = new ComponentStyleAndLayout();
         private protected StyleDetails Layout => ComponentStyleAndLayout.GetLayout();
 
-        public int Height => ComponentStyleAndLayout.GetHeight();
+        public int Height => Layout.ActualHeight;
 
         private protected string Text = "";
         private protected IEnumerable<string> Lines;
@@ -101,12 +101,12 @@ namespace ConsoleDraw.Components
         }
 
         /// <summary>
-        /// This is the method that will iterate over all the children and reflow them.
+        /// This is the method that will iterate over all the children and reflow them. Only needs to happen when the screen size changes.
         /// Not all components will have to reflow, so no logic for reflow exists on the abstract base class.
         /// </summary>
         public virtual void ReflowComponentLayout()
         {
-            ComponentStyleAndLayout.SetNumberOfLines(Lines.Count());
+            ComponentStyleAndLayout.SetContentDimensions(Lines);
         }
     }
 }

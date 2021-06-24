@@ -1,5 +1,7 @@
 ﻿using ConsoleDraw.DoubleBuffer;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ConsoleDraw.Components.ComponentStyling
 {
@@ -26,7 +28,8 @@ namespace ConsoleDraw.Components.ComponentStyling
         private Overflow VerticalOverflowBehavior = Overflow.Wrap;
         private SpaceFilling HorizontalSpaceFillingBehavior = SpaceFilling.Natural;
         private SpaceFilling VerticalSpaceFillingBehavior = SpaceFilling.Natural;
-        private int? NumberOfLines = null;
+        private int? ContentWidth = null;
+        private int? ContentHeight = null;
 
         public void SetAnchorPoints(AnchorPoints[] anchorPoints)
         {
@@ -121,9 +124,9 @@ namespace ConsoleDraw.Components.ComponentStyling
             {
                 X = X,
                 Y = Y,
-                SpaceToFillWidth = MinimumWidth, //This can optionally be set to something larger, but not smaller
-                SpaceToFillHeight = Height, //Same as width?
-                ContentLines = NumberOfLines,
+                SpaceToFillWidth = Math.Max(MinimumWidth, GetContentWidth()), //This can optionally be set to something larger, but not smaller
+                SpaceToFillHeight = Math.Max(Height, GetContentHeight()), //Same as width?
+                ContentHeight = ContentHeight,
                 Border = Border,
                 MarginBottom = MarginBottom,
                 MarginLeft = MarginLeft,
@@ -142,9 +145,10 @@ namespace ConsoleDraw.Components.ComponentStyling
             };
         }
 
-        public void SetNumberOfLines(int numLines)
+        public void SetContentDimensions(IEnumerable<string> lines)
         {
-            NumberOfLines = numLines;
+            ContentWidth = lines.Max(x => x.Length);
+            ContentHeight = lines.Count();
         }
 
         public void SetComponentColors(ConsoleColor foregroundColor, ConsoleColor backgroundColor)
@@ -158,11 +162,20 @@ namespace ConsoleDraw.Components.ComponentStyling
             buffer.SetColors(ForegroundColor, BackgroundColor);
         }
 
-        public int GetHeight()
+        private int GetContentWidth()
         {
-            if (NumberOfLines.HasValue)
+            if (ContentWidth.HasValue)
             {
-                return NumberOfLines.Value;
+                return ContentWidth.Value;
+            }
+            return 0;
+        }
+
+        public int GetContentHeight()
+        {
+            if (ContentHeight.HasValue)
+            {
+                return ContentHeight.Value;
             }
             return Height;
         }

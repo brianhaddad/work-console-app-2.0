@@ -22,7 +22,7 @@ namespace ConsoleDraw.Components.Text
         public override void ReflowComponentLayout()
         {
             Lines = Text.PutInWindow(Layout);
-            ComponentStyleAndLayout.SetNumberOfLines(Lines.Count());
+            ComponentStyleAndLayout.SetContentDimensions(Lines);
         }
 
         public override void Draw(int originX, int originY)

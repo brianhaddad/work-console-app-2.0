@@ -1,4 +1,6 @@
-﻿namespace ConsoleDraw.Components.ComponentStyling
+﻿using System;
+
+namespace ConsoleDraw.Components.ComponentStyling
 {
     public class StyleDetails
     {
@@ -6,7 +8,8 @@
         public int Y { get; set; }
         public int SpaceToFillWidth { get; set; }
         public int SpaceToFillHeight { get; set; }
-        public int? ContentLines { get; set; } //Do I need? How to use?
+        public int? ContentHeight { get; set; }
+        public int? ContentWidth { get; set; }
         public int MarginTop { get; set; }
         public int MarginRight { get; set; }
         public int MarginBottom { get; set; }
@@ -36,10 +39,28 @@
         private int TotalMarginWidth => MarginRight + MarginLeft;
         private int TotalMarginHeight => MarginTop + MarginBottom;
 
-        public int InnerWidthInsidePadding => SpaceToFillWidth - TotalPaddingWidth - TotalMarginWidth - TotalHorizontalBorderThickness;
-        public int InnerHeightInsidePadding => SpaceToFillHeight - TotalPaddingHeight - TotalVerticalBorderThickness;
+        public int ActualWidth => HorizontalSpaceFilling switch
+        {
+            SpaceFilling.Expand => SpaceToFillWidth,
+            SpaceFilling.Natural => ContentWidth.HasValue
+                ? Math.Min(ContentWidth.Value + TotalHorizontalBorderThickness + TotalPaddingWidth + TotalMarginWidth, SpaceToFillWidth)
+                : SpaceToFillWidth,
+            _ => throw new InvalidOperationException($"No behavior defined for horizontal space filling: '{HorizontalSpaceFilling}'"),
+        };
 
-        public int InnerWidthInsideBorder => SpaceToFillWidth - TotalMarginWidth - TotalHorizontalBorderThickness;
-        public int InnerHeightInsideBorder => SpaceToFillHeight - TotalMarginHeight - TotalVerticalBorderThickness;
+        public int ActualHeight => VerticalSpaceFilling switch
+        {
+            SpaceFilling.Expand => SpaceToFillHeight,
+            SpaceFilling.Natural => ContentHeight.HasValue
+                ? Math.Min(ContentHeight.Value + TotalVerticalBorderThickness + TotalPaddingHeight + TotalMarginHeight, SpaceToFillHeight)
+                : SpaceToFillHeight,
+            _ => throw new InvalidOperationException($"No behavior defined for vertical space filling: '{HorizontalSpaceFilling}'"),
+        };
+
+        public int InnerWidthInsidePadding => ActualWidth - TotalPaddingWidth - TotalMarginWidth - TotalHorizontalBorderThickness;
+        public int InnerHeightInsidePadding => ActualHeight - TotalPaddingHeight - TotalVerticalBorderThickness;
+
+        public int InnerWidthInsideBorder => ActualWidth - TotalMarginWidth - TotalHorizontalBorderThickness;
+        public int InnerHeightInsideBorder => ActualHeight - TotalMarginHeight - TotalVerticalBorderThickness;
     }
 }

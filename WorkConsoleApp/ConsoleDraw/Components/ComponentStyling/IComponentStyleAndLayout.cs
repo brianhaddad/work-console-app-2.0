@@ -1,5 +1,6 @@
 ﻿using ConsoleDraw.DoubleBuffer;
 using System;
+using System.Collections.Generic;
 
 namespace ConsoleDraw.Components.ComponentStyling
 {
@@ -25,9 +26,9 @@ namespace ConsoleDraw.Components.ComponentStyling
         void SetPadding(int top, int sides, int bottom);
         void SetPadding(int vertical, int horizontal);
         void SetPadding(int all);
-        void SetNumberOfLines(int numLines);
+        void SetContentDimensions(IEnumerable<string> lines);
         StyleDetails GetLayout();
-        int GetHeight();
+        int GetContentHeight();
         void WriteColors(IConsoleBuffer buffer);
     }
 }
