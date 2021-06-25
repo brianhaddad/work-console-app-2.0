@@ -28,7 +28,7 @@ namespace ConsoleDraw.Components
             if (!Children.Contains(child))
             {
                 Children.Add(child);
-                ReflowComponentLayout();
+                //ReflowComponentLayout();
             }
         }
 
@@ -42,7 +42,7 @@ namespace ConsoleDraw.Components
             if (Children.Contains(child))
             {
                 Children.Remove(child);
-                ReflowComponentLayout();
+                //ReflowComponentLayout();
             }
         }
 

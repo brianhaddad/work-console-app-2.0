@@ -41,5 +41,36 @@ namespace ConsoleDraw.Services
                     });
                 });
         }
+
+        public IDataComponent<T> BuildDataTableComponent<ConcreteType, ParentType, T>(
+            DataTableConfig<T> data,
+            ConsoleColor foregroundColor,
+            ConsoleColor backgroundColor,
+            ParentType parent,
+            bool border = false,
+            int padding = 0,
+            int margin = 0,
+            int width = 10,
+            int height = 0,
+            HorizontalAlignment horizontalAlignment = HorizontalAlignment.Left,
+            SpaceFilling horizontalSpaceFilling = SpaceFilling.Natural)
+            where ConcreteType : BaseComponent, IDataComponent<T> where ParentType : BaseComponent
+        {
+            var component = ComponentFactory.MakeComponent<ConcreteType>((c) =>
+            {
+                c.SetParent(parent);
+                c.ConfigureComponentLayout((layout) =>
+                {
+                    layout.SetPadding(padding);
+                    layout.SetMargin(margin);
+                    layout.SetBorder(border);
+                    layout.SetHorizontalAlignment(horizontalAlignment);
+                    layout.SetMinimumSize(width, height);
+                    layout.SetComponentColors(foregroundColor, backgroundColor);
+                });
+            });
+            component.LoadData(data);
+            return component;
+        }
     }
 }

@@ -13,4 +13,8 @@ namespace ConsoleDraw.Components
         void SetText(string text);
         int Height { get; }
     }
+    public interface IDataComponent<T> : IComponent
+    {
+        void LoadData(DataTableConfig<T> dataTableConfig);
+    }
 }

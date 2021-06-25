@@ -37,7 +37,7 @@ namespace ConsoleDraw.Components.ComponentStyling
             {
                 for (var i = 0; i < layoutDetails.MarginTop; i++)
                 {
-                    newLines.Add(RepeatCharacters(' ', layoutDetails.SpaceToFillWidth));
+                    newLines.Add(' '.RepeatCharacter(layoutDetails.SpaceToFillWidth));
                 }
             }
             //header area
@@ -55,7 +55,7 @@ namespace ConsoleDraw.Components.ComponentStyling
             }
             else if (layoutDetails.Border)
             {
-                var firstLine = WinUpperLeft + RepeatCharacters(WinHorizontal, layoutDetails.InnerWidthInsideBorder) + WinUpperRight;
+                var firstLine = WinUpperLeft + WinHorizontal.RepeatCharacter(layoutDetails.InnerWidthInsideBorder) + WinUpperRight;
                 newLines.Add(firstLine.AlignLine(HorizontalAlignment.Center, layoutDetails.SpaceToFillWidth));
             }
 
@@ -67,12 +67,12 @@ namespace ConsoleDraw.Components.ComponentStyling
                 {
                     if (layoutDetails.Border)
                     {
-                        var newLine = WinVertical + RepeatCharacters(' ', layoutDetails.InnerWidthInsideBorder) + WinVertical;
+                        var newLine = WinVertical + ' '.RepeatCharacter(layoutDetails.InnerWidthInsideBorder) + WinVertical;
                         newLines.Add(newLine.AlignLine(HorizontalAlignment.Center, layoutDetails.SpaceToFillWidth));
                     }
                     else
                     {
-                        newLines.Add(RepeatCharacters(' ', layoutDetails.SpaceToFillWidth));
+                        newLines.Add(' '.RepeatCharacter(layoutDetails.SpaceToFillWidth));
                     }
                 }
             }
@@ -95,12 +95,12 @@ namespace ConsoleDraw.Components.ComponentStyling
                 {
                     if (layoutDetails.Border)
                     {
-                        var newLine = WinVertical + RepeatCharacters(' ', layoutDetails.InnerWidthInsideBorder) + WinVertical;
+                        var newLine = WinVertical + ' '.RepeatCharacter(layoutDetails.InnerWidthInsideBorder) + WinVertical;
                         newLines.Add(newLine.AlignLine(HorizontalAlignment.Center, layoutDetails.SpaceToFillWidth));
                     }
                     else
                     {
-                        newLines.Add(RepeatCharacters(' ', layoutDetails.SpaceToFillWidth));
+                        newLines.Add(' '.RepeatCharacter(layoutDetails.SpaceToFillWidth));
                     }
                 }
             }
@@ -108,7 +108,7 @@ namespace ConsoleDraw.Components.ComponentStyling
             //last line
             if (layoutDetails.Border)
             {
-                var lastLine = WinLowerLeft + RepeatCharacters(WinHorizontal, layoutDetails.InnerWidthInsideBorder) + WinLowerRight;
+                var lastLine = WinLowerLeft + WinHorizontal.RepeatCharacter(layoutDetails.InnerWidthInsideBorder) + WinLowerRight;
                 newLines.Add(lastLine.AlignLine(HorizontalAlignment.Center, layoutDetails.SpaceToFillWidth));
             }
 
@@ -116,7 +116,7 @@ namespace ConsoleDraw.Components.ComponentStyling
             {
                 for (var i = 0; i < layoutDetails.MarginBottom; i++)
                 {
-                    newLines.Add(RepeatCharacters(' ', layoutDetails.SpaceToFillWidth));
+                    newLines.Add(' '.RepeatCharacter(layoutDetails.SpaceToFillWidth));
                 }
             }
 
@@ -156,22 +156,22 @@ namespace ConsoleDraw.Components.ComponentStyling
             switch (alignment)
             {
                 case HorizontalAlignment.Left:
-                    afterSpace = RepeatCharacters(fillChar, numSpaces);
+                    afterSpace = fillChar.RepeatCharacter(numSpaces);
                     break;
 
                 case HorizontalAlignment.Right:
-                    beforeSpace = RepeatCharacters(fillChar, numSpaces);
+                    beforeSpace = fillChar.RepeatCharacter(numSpaces);
                     break;
 
                 case HorizontalAlignment.Center:
-                    beforeSpace = RepeatCharacters(fillChar, numSpaces / 2);
-                    afterSpace = RepeatCharacters(fillChar, numSpaces - beforeSpace.Length);
+                    beforeSpace = fillChar.RepeatCharacter(numSpaces / 2);
+                    afterSpace = fillChar.RepeatCharacter(numSpaces - beforeSpace.Length);
                     break;
             }
             return beforeSpace + line + afterSpace;
         }
 
-        private static string RepeatCharacters(char character, int numTimes)
+        public static string RepeatCharacter(this char character, int numTimes)
         {
             var result = "";
             for (var i = 0; i < numTimes; i++)

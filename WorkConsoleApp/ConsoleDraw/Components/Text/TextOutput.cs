@@ -31,7 +31,7 @@ namespace ConsoleDraw.Components.Text
             var lines = Lines.ToArray();
             for (var i = 0; i < lines.Length; i++)
             {
-                ConsoleBuffer.WriteLineToBuffer(lines[i], Layout.X, Layout.Y + i);
+                ConsoleBuffer.WriteLineToBuffer(lines[i], originX + Layout.X, originY + Layout.Y + i);
             }
             base.Draw(originX, originY);
         }

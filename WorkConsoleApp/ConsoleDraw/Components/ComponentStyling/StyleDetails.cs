@@ -43,7 +43,7 @@ namespace ConsoleDraw.Components.ComponentStyling
         {
             SpaceFilling.Expand => SpaceToFillWidth,
             SpaceFilling.Natural => ContentWidth.HasValue
-                ? Math.Min(ContentWidth.Value + TotalHorizontalBorderThickness + TotalPaddingWidth + TotalMarginWidth, SpaceToFillWidth)
+                ? Math.Min(ContentWidth.Value, SpaceToFillWidth)
                 : SpaceToFillWidth,
             _ => throw new InvalidOperationException($"No behavior defined for horizontal space filling: '{HorizontalSpaceFilling}'"),
         };
@@ -52,7 +52,7 @@ namespace ConsoleDraw.Components.ComponentStyling
         {
             SpaceFilling.Expand => SpaceToFillHeight,
             SpaceFilling.Natural => ContentHeight.HasValue
-                ? Math.Min(ContentHeight.Value + TotalVerticalBorderThickness + TotalPaddingHeight + TotalMarginHeight, SpaceToFillHeight)
+                ? Math.Min(ContentHeight.Value, SpaceToFillHeight) //removed border and spaces becayse they're drawn in the content lines
                 : SpaceToFillHeight,
             _ => throw new InvalidOperationException($"No behavior defined for vertical space filling: '{HorizontalSpaceFilling}'"),
         };

@@ -1,9 +1,11 @@
 ﻿using ConsoleDraw.Components;
 using ConsoleDraw.Components.ComponentStyling;
 using ConsoleDraw.Components.Layout;
+using ConsoleDraw.Components.Text;
 using ConsoleDraw.DoubleBuffer;
 using ConsoleDraw.Services;
 using System;
+using System.Collections.Generic;
 
 namespace WorkConsoleApp
 {
@@ -41,6 +43,28 @@ namespace WorkConsoleApp
 
             componentBuilder.BuildTextComponent("This sentence is longer and more interesting.", ConsoleColor.Red, ConsoleColor.Black, layoutComponent);
             componentBuilder.BuildTextComponent("Something witty.", ConsoleColor.White, ConsoleColor.DarkBlue, layoutComponent, border: true, horizontalAlignment: HorizontalAlignment.Right);
+
+            var configData = new DataTableConfig<string>
+            {
+                Data = new List<List<string>>
+                {
+                    new List<string> { "a", "totally", "0.0" },
+                    new List<string> { "b", "not", "1.0" },
+                    new List<string> { "c", "a big table", "0.5" },
+                    new List<string> { "", "total", "1.5" },
+                },
+                LastRowIsSum = true,
+                OddLineForegroundColor = ConsoleColor.Black,
+                OddLineBackgroundColor = ConsoleColor.Gray,
+            };
+            componentBuilder.BuildDataTableComponent<SimpleTextTable, VerticalLayout, string>(
+                configData,
+                ConsoleColor.Black,
+                ConsoleColor.DarkGray,
+                layoutComponent,
+                border: true,
+                padding: 1,
+                horizontalSpaceFilling: SpaceFilling.Natural); //Natural should mean it doesn't fill the space, but it does due to the reflow process. Fix?
 
             layoutComponent.ReflowComponentLayout();
             layoutComponent.Draw(0, 0);
