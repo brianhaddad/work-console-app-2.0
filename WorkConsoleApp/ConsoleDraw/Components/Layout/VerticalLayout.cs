@@ -4,6 +4,7 @@
     {
         public override void ReflowComponentLayout()
         {
+            //TODO: this flow ignores any custom formatting options.
             var x = Layout.HorizontalBorderThickness;
             var y = Layout.TopBorderThickness;
             foreach (var child in Children)
