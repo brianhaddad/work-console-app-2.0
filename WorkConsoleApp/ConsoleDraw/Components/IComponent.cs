@@ -12,6 +12,7 @@ namespace ConsoleDraw.Components
         void SetParent<T>(T parent) where T : BaseComponent;
         void SetText(string text);
         int Height { get; }
+        int Width { get; }
     }
     public interface IDataComponent<T> : IComponent
     {

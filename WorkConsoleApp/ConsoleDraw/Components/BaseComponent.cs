@@ -1,7 +1,6 @@
 ﻿using ConsoleDraw.Components.ComponentStyling;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace ConsoleDraw.Components
 {
@@ -14,6 +13,7 @@ namespace ConsoleDraw.Components
         private protected StyleDetails Layout => ComponentStyleAndLayout.GetLayout();
 
         public int Height => Layout.ActualHeight;
+        public int Width => Layout.ActualWidth;
 
         private protected string Text = "";
         private protected IEnumerable<string> Lines;

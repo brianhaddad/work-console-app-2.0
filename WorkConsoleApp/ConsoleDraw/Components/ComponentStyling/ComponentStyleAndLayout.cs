@@ -71,6 +71,8 @@ namespace ConsoleDraw.Components.ComponentStyling
             Y = top;
         }
 
+        //TODO: minimum and target sizes need to be rethought and cleaned up.
+        //space filling behavior needs to be used to determine how size is handled.
         public void SetMinimumSize(int w, int h)
         {
             MinimumWidth = w;
@@ -124,7 +126,7 @@ namespace ConsoleDraw.Components.ComponentStyling
             {
                 X = X,
                 Y = Y,
-                SpaceToFillWidth = Math.Max(MinimumWidth, GetContentWidth()), //This can optionally be set to something larger, but not smaller
+                SpaceToFillWidth = Math.Max(MinimumWidth, GetContentWidth()), //This can optionally be set to something larger, but not smaller?
                 SpaceToFillHeight = Math.Max(Height, GetContentHeight()), //Same as width?
                 ContentHeight = ContentHeight,
                 Border = Border,
